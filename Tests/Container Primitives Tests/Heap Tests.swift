@@ -51,7 +51,7 @@ struct HeapTests {
 
     @Test("Peek does not remove")
     func peekDoesNotRemove() {
-        var heap: Heap<Int> = [3, 1, 2]
+        let heap: Heap<Int> = [3, 1, 2]
 
         #expect(heap.peek.min == 1)
         #expect(heap.peek.min == 1)

@@ -12,10 +12,10 @@
 extension Container.Array {
     /// A growable array with a compile-time initial capacity hint.
     ///
-    /// Unlike `Fixed`, this array can grow unbounded. The generic parameter `N`
+    /// Unlike `Bounded`, this array can grow unbounded. The generic parameter `N`
     /// specifies the initial allocation capacity when the first element is added.
     /// Subsequent growth uses a doubling strategy.
-    public struct Growable<let N: Int>: ~Copyable {
+    public struct Unbounded<let N: Int>: ~Copyable {
         @usableFromInline
         var _storage: UnsafeMutablePointer<Element>?
 
@@ -46,7 +46,7 @@ extension Container.Array {
 
 // MARK: - Properties
 
-extension Container.Array.Growable {
+extension Container.Array.Unbounded {
     /// The number of elements in the array.
     @inlinable
     public var count: Int { _count }
@@ -66,7 +66,7 @@ extension Container.Array.Growable {
 
 // MARK: - Core Operations
 
-extension Container.Array.Growable {
+extension Container.Array.Unbounded {
     /// Appends an element to the array.
     @inlinable
     public mutating func append(_ element: consuming Element) {
@@ -114,7 +114,7 @@ extension Container.Array.Growable {
 
 // MARK: - Iteration
 
-extension Container.Array.Growable {
+extension Container.Array.Unbounded {
     /// Iterates over all elements.
     @inlinable
     public func forEach(_ body: (borrowing Element) throws -> Void) rethrows {
@@ -137,12 +137,12 @@ extension Container.Array.Growable {
 
 // MARK: - Sendable
 
-extension Container.Array.Growable: @unchecked Sendable where Element: Sendable {}
+extension Container.Array.Unbounded: @unchecked Sendable where Element: Sendable {}
 
 // MARK: - Convenience Typealiases
 
 extension Container.Array {
-    public typealias Small1 = Growable<1>
-    public typealias Small4 = Growable<4>
-    public typealias Small8 = Growable<8>
+    public typealias Small1 = Unbounded<1>
+    public typealias Small4 = Unbounded<4>
+    public typealias Small8 = Unbounded<8>
 }

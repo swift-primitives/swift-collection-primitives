@@ -12,9 +12,9 @@
 extension Container.Array {
     /// A non-resizable array that is always fully initialized.
     ///
-    /// Unlike standard `Array`, `Fixed` cannot grow or shrink after creation.
+    /// Unlike standard `Array`, `Bounded` cannot grow or shrink after creation.
     /// All elements are initialized at construction time.
-    public struct Fixed: ~Copyable {
+    public struct Bounded: ~Copyable {
         @usableFromInline
         var storage: UnsafeMutablePointer<Element>
 
@@ -34,7 +34,7 @@ extension Container.Array {
 
 // MARK: - Initialization
 
-extension Container.Array.Fixed {
+extension Container.Array.Bounded {
     /// Creates a fixed array with the specified count, initializing each element.
     ///
     /// - Parameters:
@@ -64,7 +64,7 @@ extension Container.Array.Fixed {
 
 // MARK: - Properties
 
-extension Container.Array.Fixed {
+extension Container.Array.Bounded {
     /// Whether the array is empty.
     @inlinable
     public var isEmpty: Bool { count == 0 }
@@ -72,7 +72,7 @@ extension Container.Array.Fixed {
 
 // MARK: - Subscript
 
-extension Container.Array.Fixed {
+extension Container.Array.Bounded {
     /// Accesses the element at the specified index.
     @inlinable
     public subscript(index: Int) -> Element {
@@ -89,7 +89,7 @@ extension Container.Array.Fixed {
 
 // MARK: - Update
 
-extension Container.Array.Fixed {
+extension Container.Array.Bounded {
     /// Updates the element at the specified index.
     @inlinable
     public mutating func update<E: Swift.Error>(
@@ -103,7 +103,7 @@ extension Container.Array.Fixed {
 
 // MARK: - Pointer Access
 
-extension Container.Array.Fixed {
+extension Container.Array.Bounded {
     @inlinable
     public func withUnsafeBufferPointer<R, E: Swift.Error>(
         _ body: (UnsafeBufferPointer<Element>) throws(E) -> R
@@ -121,4 +121,4 @@ extension Container.Array.Fixed {
 
 // MARK: - Sendable
 
-extension Container.Array.Fixed: @unchecked Sendable where Element: Sendable {}
+extension Container.Array.Bounded: @unchecked Sendable where Element: Sendable {}
