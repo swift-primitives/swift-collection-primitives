@@ -251,6 +251,7 @@ extension Deque: ExpressibleByArrayLiteral {
 
 // MARK: - CustomStringConvertible
 
+#if !hasFeature(Embedded)
 extension Deque: CustomStringConvertible {
     public var description: String {
         var result = "Deque(["
@@ -264,6 +265,7 @@ extension Deque: CustomStringConvertible {
         return result
     }
 }
+#endif
 
 // MARK: - Internal CoW Identity (for testing)
 

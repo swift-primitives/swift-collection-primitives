@@ -135,6 +135,40 @@ extension Container.Array.Unbounded {
     }
 }
 
+// MARK: - Buffer Access
+
+extension Container.Array.Unbounded {
+    /// Provides read-only access to the underlying contiguous storage.
+    ///
+    /// The buffer pointer is valid only for the duration of the closure.
+    /// Do not store or return the pointer.
+    @inlinable
+    public func withUnsafeBufferPointer<R, E: Error>(
+        _ body: (UnsafeBufferPointer<Element>) throws(E) -> R
+    ) throws(E) -> R {
+        if let storage = _storage {
+            return try body(UnsafeBufferPointer(start: storage, count: _count))
+        } else {
+            return try body(UnsafeBufferPointer(start: nil, count: 0))
+        }
+    }
+
+    /// Provides mutable access to the underlying contiguous storage.
+    ///
+    /// The buffer pointer is valid only for the duration of the closure.
+    /// Do not store or return the pointer. Do not reallocate during the closure.
+    @inlinable
+    public mutating func withUnsafeMutableBufferPointer<R, E: Error>(
+        _ body: (UnsafeMutableBufferPointer<Element>) throws(E) -> R
+    ) throws(E) -> R {
+        if let storage = _storage {
+            return try body(UnsafeMutableBufferPointer(start: storage, count: _count))
+        } else {
+            return try body(UnsafeMutableBufferPointer(start: nil, count: 0))
+        }
+    }
+}
+
 // MARK: - Sendable
 
 extension Container.Array.Unbounded: @unchecked Sendable where Element: Sendable {}

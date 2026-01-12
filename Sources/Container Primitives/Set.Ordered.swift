@@ -247,6 +247,7 @@ extension Set.Ordered: ExpressibleByArrayLiteral {
 
 // MARK: - CustomStringConvertible
 
+#if !hasFeature(Embedded)
 extension Set.Ordered: CustomStringConvertible {
     public var description: String {
         var result = "Set.Ordered(["
@@ -260,6 +261,7 @@ extension Set.Ordered: CustomStringConvertible {
         return result
     }
 }
+#endif
 
 // MARK: - Internal Identity (for testing)
 
