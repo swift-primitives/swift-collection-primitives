@@ -11,7 +11,7 @@
 
 // MARK: - Element Access
 
-extension SafeCollectionAccessor {
+extension Container.Safe {
     /// Accesses the element at the specified index, returning `nil` if out of bounds.
     ///
     /// - Parameter index: The position of the element to access.
@@ -32,7 +32,7 @@ extension SafeCollectionAccessor {
 
 // MARK: - Range Access
 
-extension SafeCollectionAccessor {
+extension Container.Safe {
     /// Accesses the subsequence at the specified range, returning `nil` if out of bounds.
     ///
     /// - Parameter bounds: The range of indices to access.
@@ -55,7 +55,7 @@ extension SafeCollectionAccessor {
 
 // MARK: - Integer Index Access
 
-extension SafeCollectionAccessor where Base.Index == Int {
+extension Container.Safe where Base.Index == Int {
     /// Accesses the element at the specified integer index, returning `nil` if out of bounds.
     ///
     /// This overload safely converts arbitrary `FixedWidthInteger` types to `Int`.

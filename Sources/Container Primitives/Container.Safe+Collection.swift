@@ -9,24 +9,6 @@
 //
 // ===----------------------------------------------------------------------===//
 
-/// Namespace for safe collection access operations.
-///
-/// All subscripts return `Optional`, returning `nil` for out-of-bounds access
-/// instead of trapping.
-///
-/// Accessed via the `.safe` property on any `Collection`.
-public struct SafeCollectionAccessor<Base: Collection> {
-    @usableFromInline
-    let base: Base
-
-    @usableFromInline
-    init(base: Base) {
-        self.base = base
-    }
-}
-
-extension SafeCollectionAccessor: Sendable where Base: Sendable {}
-
 // MARK: - Collection Extension
 
 extension Collection {
@@ -49,7 +31,7 @@ extension Collection {
     /// let bad = array.safe[0..<10]   // nil (no crash)
     /// ```
     @inlinable
-    public var safe: SafeCollectionAccessor<Self> {
-        SafeCollectionAccessor(base: self)
+    public var safe: Container.Safe<Self> {
+        Container.Safe(self)
     }
 }

@@ -18,8 +18,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-primitives/swift-storage-primitives.git", from: "0.0.1"),
-        .package(url: "https://github.com/swift-primitives/swift-test-primitives.git", from: "0.0.1"),
+        .package(path: "../swift-storage-primitives"),
+        .package(path: "../swift-test-primitives"),
     ],
     targets: [
         .target(

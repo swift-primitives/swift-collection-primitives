@@ -1,4 +1,4 @@
-// Collection.Safe Tests.swift
+// Container.Safe Tests.swift
 // swift-container-primitives
 //
 // Tests for safe collection access operations.
@@ -8,7 +8,7 @@ import Testing
 
 // MARK: - Element Access Tests
 
-@Suite("SafeCollectionAccessor Element Access")
+@Suite("Container.Safe Element Access")
 struct SafeElementAccessTests {
 
     @Test("access valid index returns element")
@@ -50,7 +50,7 @@ struct SafeElementAccessTests {
 
 // MARK: - Range Access Tests
 
-@Suite("SafeCollectionAccessor Range Access")
+@Suite("Container.Safe Range Access")
 struct SafeRangeAccessTests {
 
     @Test("access valid range returns subsequence")
@@ -91,7 +91,7 @@ struct SafeRangeAccessTests {
 
 // MARK: - Integer Index Conversion Tests
 
-@Suite("SafeCollectionAccessor Integer Conversion")
+@Suite("Container.Safe Integer Conversion")
 struct SafeIntegerConversionTests {
 
     @Test("access with UInt index")
@@ -148,7 +148,7 @@ struct SafeIntegerConversionTests {
 
 // MARK: - ArraySlice Tests
 
-@Suite("SafeCollectionAccessor ArraySlice")
+@Suite("Container.Safe ArraySlice")
 struct SafeArraySliceTests {
 
     @Test("access ArraySlice with offset indices")
@@ -175,7 +175,7 @@ struct SafeArraySliceTests {
 
 // MARK: - String Tests
 
-@Suite("SafeCollectionAccessor String")
+@Suite("Container.Safe String")
 struct SafeStringTests {
 
     @Test("access String.UTF8View safely")
@@ -197,7 +197,7 @@ struct SafeStringTests {
 
 // MARK: - Sendable Tests
 
-@Suite("SafeCollectionAccessor Sendable")
+@Suite("Container.Safe Sendable")
 struct SafeSendableTests {
 
     @Test("accessor is Sendable when base is Sendable")
@@ -216,7 +216,7 @@ struct SafeSendableTests {
 
 // MARK: - Edge Cases
 
-@Suite("SafeCollectionAccessor Edge Cases")
+@Suite("Container.Safe Edge Cases")
 struct SafeEdgeCaseTests {
 
     @Test("access at Int.max returns nil")
@@ -254,7 +254,7 @@ struct SafeEdgeCaseTests {
 
 // MARK: - Practical Use Cases
 
-@Suite("SafeCollectionAccessor Practical")
+@Suite("Container.Safe Practical")
 struct SafePracticalTests {
 
     @Test("binary data offset access")
