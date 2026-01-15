@@ -14,6 +14,7 @@ extension Container.Array {
     ///
     /// Unlike standard `Array`, `Bounded` cannot grow or shrink after creation.
     /// All elements are initialized at construction time.
+    @safe
     public struct Bounded: ~Copyable {
         @usableFromInline
         var storage: UnsafeMutablePointer<Element>
@@ -23,10 +24,10 @@ extension Container.Array {
 
         deinit {
             for i in 0..<count {
-                (storage + i).deinitialize(count: 1)
+                unsafe (storage + i).deinitialize(count: 1)
             }
             if count > 0 {
-                storage.deallocate()
+                unsafe storage.deallocate()
             }
         }
     }
@@ -48,16 +49,16 @@ extension Container.Array.Bounded {
         precondition(count >= 0, "Count must be non-negative")
 
         if count == 0 {
-            self.storage = UnsafeMutablePointer<Element>(bitPattern: MemoryLayout<Element>.alignment)!
+            unsafe self.storage = UnsafeMutablePointer<Element>(bitPattern: MemoryLayout<Element>.alignment)!
             self.count = 0
             return
         }
 
         let storage = UnsafeMutablePointer<Element>.allocate(capacity: count)
         for i in 0..<count {
-            (storage + i).initialize(to: initializer(i))
+            unsafe (storage + i).initialize(to: initializer(i))
         }
-        self.storage = storage
+        unsafe self.storage = storage
         self.count = count
     }
 }
@@ -78,11 +79,11 @@ extension Container.Array.Bounded {
     public subscript(index: Int) -> Element {
         _read {
             precondition(index >= 0 && index < count, "Index out of bounds")
-            yield storage[index]
+            yield unsafe storage[index]
         }
         _modify {
             precondition(index >= 0 && index < count, "Index out of bounds")
-            yield &storage[index]
+            yield &(unsafe storage[index])
         }
     }
 }
@@ -97,7 +98,7 @@ extension Container.Array.Bounded {
         _ body: (inout Element) throws(E) -> Void
     ) throws(E) {
         precondition(index >= 0 && index < count, "Index out of bounds")
-        try body(&storage[index])
+        try unsafe body(&storage[index])
     }
 }
 
@@ -108,14 +109,14 @@ extension Container.Array.Bounded {
     public func withUnsafeBufferPointer<R, E: Swift.Error>(
         _ body: (UnsafeBufferPointer<Element>) throws(E) -> R
     ) throws(E) -> R {
-        try body(UnsafeBufferPointer(start: count > 0 ? storage : nil, count: count))
+        try unsafe body(UnsafeBufferPointer(start: count > 0 ? storage : nil, count: count))
     }
 
     @inlinable
     public mutating func withUnsafeMutableBufferPointer<R, E: Swift.Error>(
         _ body: (UnsafeMutableBufferPointer<Element>) throws(E) -> R
     ) throws(E) -> R {
-        try body(UnsafeMutableBufferPointer(start: count > 0 ? storage : nil, count: count))
+        try unsafe body(UnsafeMutableBufferPointer(start: count > 0 ? storage : nil, count: count))
     }
 }
 

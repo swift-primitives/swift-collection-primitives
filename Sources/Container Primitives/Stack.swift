@@ -10,6 +10,7 @@
 // ===----------------------------------------------------------------------===//
 
 /// A fixed-capacity LIFO stack with manual element lifecycle.
+@safe
 public struct Stack<Element: ~Copyable>: ~Copyable {
     @usableFromInline
     var storage: UnsafeMutablePointer<Element>
@@ -29,14 +30,14 @@ public struct Stack<Element: ~Copyable>: ~Copyable {
         }
 
         if capacity == 0 {
-            self.storage = UnsafeMutablePointer<Element>(bitPattern: MemoryLayout<Element>.alignment)!
+            unsafe self.storage = UnsafeMutablePointer<Element>(bitPattern: MemoryLayout<Element>.alignment)!
             self.capacity = 0
             self._count = 0
             return
         }
 
         let storage = UnsafeMutablePointer<Element>.allocate(capacity: capacity)
-        self.storage = storage
+        unsafe self.storage = storage
         self.capacity = capacity
         self._count = 0
     }
@@ -44,10 +45,10 @@ public struct Stack<Element: ~Copyable>: ~Copyable {
     deinit {
         // Deinitialize all elements
         for i in 0..<_count {
-            (storage + i).deinitialize(count: 1)
+            unsafe (storage + i).deinitialize(count: 1)
         }
         if capacity > 0 {
-            storage.deallocate()
+            unsafe storage.deallocate()
         }
     }
 }
@@ -77,7 +78,7 @@ extension Stack where Element: ~Copyable {
         guard _count < capacity else {
             throw .overflow
         }
-        (storage + _count).initialize(to: element)
+        unsafe (storage + _count).initialize(to: element)
         _count += 1
     }
 
@@ -88,7 +89,7 @@ extension Stack where Element: ~Copyable {
             return nil
         }
         _count -= 1
-        return (storage + _count).move()
+        return unsafe (storage + _count).move()
     }
 }
 
@@ -101,7 +102,7 @@ extension Stack {
         guard _count > 0 else {
             return nil
         }
-        return try body((storage + _count - 1).pointee)
+        return try unsafe body((storage + _count - 1).pointee)
     }
 }
 
@@ -114,7 +115,7 @@ extension Stack where Element: ~Copyable {
         _ body: (UnsafePointer<Element>) throws(E) -> R
     ) throws(E) -> R {
         precondition(index >= 0 && index < _count)
-        return try body(storage + index)
+        return try unsafe body(storage + index)
     }
 
     @inlinable
@@ -123,7 +124,7 @@ extension Stack where Element: ~Copyable {
         _ body: (UnsafeMutablePointer<Element>) throws(E) -> R
     ) throws(E) -> R {
         precondition(index >= 0 && index < _count)
-        return try body(storage + index)
+        return try unsafe body(storage + index)
     }
 }
 

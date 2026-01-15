@@ -15,6 +15,7 @@ extension Container.Array {
     /// Unlike `Bounded`, this array can grow unbounded. The generic parameter `N`
     /// specifies the initial allocation capacity when the first element is added.
     /// Subsequent growth uses a doubling strategy.
+    @safe
     public struct Unbounded<let N: Int>: ~Copyable {
         @usableFromInline
         var _storage: UnsafeMutablePointer<Element>?
@@ -28,17 +29,17 @@ extension Container.Array {
         /// Creates an empty growable array.
         @inlinable
         public init() {
-            self._storage = nil
+            unsafe self._storage = nil
             self._count = 0
             self._capacity = 0
         }
 
         deinit {
-            if let storage = _storage {
+            if let storage = unsafe _storage {
                 for i in 0..<_count {
-                    (storage + i).deinitialize(count: 1)
+                    unsafe (storage + i).deinitialize(count: 1)
                 }
-                storage.deallocate()
+                unsafe storage.deallocate()
             }
         }
     }
@@ -73,7 +74,7 @@ extension Container.Array.Unbounded {
         if _count >= _capacity {
             grow()
         }
-        (_storage! + _count).initialize(to: element)
+        unsafe (_storage! + _count).initialize(to: element)
         _count += 1
     }
 
@@ -84,15 +85,15 @@ extension Container.Array.Unbounded {
             return nil
         }
         _count -= 1
-        return (_storage! + _count).move()
+        return unsafe (_storage! + _count).move()
     }
 
     /// Removes all elements from the array.
     @inlinable
     public mutating func removeAll() {
-        guard let storage = _storage else { return }
+        guard let storage = unsafe _storage else { return }
         for i in 0..<_count {
-            (storage + i).deinitialize(count: 1)
+            unsafe (storage + i).deinitialize(count: 1)
         }
         _count = 0
     }
@@ -102,12 +103,12 @@ extension Container.Array.Unbounded {
         let newCapacity = _capacity == 0 ? max(N, 1) : _capacity * 2
         let newStorage = UnsafeMutablePointer<Element>.allocate(capacity: newCapacity)
 
-        if let oldStorage = _storage {
-            newStorage.moveInitialize(from: oldStorage, count: _count)
-            oldStorage.deallocate()
+        if let oldStorage = unsafe _storage {
+            unsafe newStorage.moveInitialize(from: oldStorage, count: _count)
+            unsafe oldStorage.deallocate()
         }
 
-        _storage = newStorage
+        unsafe _storage = newStorage
         _capacity = newCapacity
     }
 }
@@ -118,18 +119,18 @@ extension Container.Array.Unbounded {
     /// Iterates over all elements.
     @inlinable
     public func forEach(_ body: (borrowing Element) throws -> Void) rethrows {
-        guard let storage = _storage else { return }
+        guard let storage = unsafe _storage else { return }
         for i in 0..<_count {
-            try body((storage + i).pointee)
+            try unsafe body((storage + i).pointee)
         }
     }
 
     /// Removes and consumes all elements.
     @inlinable
     public mutating func drain(_ body: (consuming Element) -> Void) {
-        guard let storage = _storage else { return }
+        guard let storage = unsafe _storage else { return }
         for i in 0..<_count {
-            body((storage + i).move())
+            unsafe body((storage + i).move())
         }
         _count = 0
     }
@@ -146,10 +147,10 @@ extension Container.Array.Unbounded {
     public func withUnsafeBufferPointer<R, E: Error>(
         _ body: (UnsafeBufferPointer<Element>) throws(E) -> R
     ) throws(E) -> R {
-        if let storage = _storage {
-            return try body(UnsafeBufferPointer(start: storage, count: _count))
+        if let storage = unsafe _storage {
+            return try unsafe body(UnsafeBufferPointer(start: storage, count: _count))
         } else {
-            return try body(UnsafeBufferPointer(start: nil, count: 0))
+            return try unsafe body(UnsafeBufferPointer(start: nil, count: 0))
         }
     }
 
@@ -161,10 +162,10 @@ extension Container.Array.Unbounded {
     public mutating func withUnsafeMutableBufferPointer<R, E: Error>(
         _ body: (UnsafeMutableBufferPointer<Element>) throws(E) -> R
     ) throws(E) -> R {
-        if let storage = _storage {
-            return try body(UnsafeMutableBufferPointer(start: storage, count: _count))
+        if let storage = unsafe _storage {
+            return try unsafe body(UnsafeMutableBufferPointer(start: storage, count: _count))
         } else {
-            return try body(UnsafeMutableBufferPointer(start: nil, count: 0))
+            return try unsafe body(UnsafeMutableBufferPointer(start: nil, count: 0))
         }
     }
 }

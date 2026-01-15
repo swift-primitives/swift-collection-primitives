@@ -275,6 +275,6 @@ extension Deque {
     /// Access via `@testable import StandardsCollections`.
     @usableFromInline
     internal var _identity: ObjectIdentifier {
-        ObjectIdentifier(storage.buffer)
+        unsafe ObjectIdentifier(storage.buffer)
     }
 }

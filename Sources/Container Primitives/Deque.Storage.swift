@@ -13,6 +13,7 @@ extension Deque {
     /// Type-local CoW storage for Deque.
     ///
     /// Implements a ring buffer with copy-on-write semantics.
+    @safe
     @usableFromInline
     struct Storage {
         @usableFromInline
@@ -20,12 +21,12 @@ extension Deque {
 
         @usableFromInline
         init() {
-            self.buffer = Buffer.create(minimumCapacity: 0)
+            unsafe self.buffer = Buffer.create(minimumCapacity: 0)
         }
 
         @usableFromInline
         init(buffer: Buffer) {
-            self.buffer = buffer
+            unsafe self.buffer = buffer
         }
     }
 }
@@ -74,56 +75,57 @@ enum _DequeBufferDebug {
 
 extension Deque.Storage {
     /// ManagedBuffer-based storage for the ring buffer.
+    @unsafe
     @usableFromInline
     final class Buffer: ManagedBuffer<Header, Element> {
         @usableFromInline
         static func create(minimumCapacity: Int) -> Buffer {
             let requestedCapacity = Swift.max(minimumCapacity, 4)
-            let buffer = self.create(minimumCapacity: requestedCapacity) { buffer in
+            let buffer = unsafe self.create(minimumCapacity: requestedCapacity) { buffer in
                 // Use the actual capacity from ManagedBuffer, not the requested one
                 Header(count: 0, head: 0, capacity: buffer.capacity)
             }
-            return unsafeDowncast(buffer, to: Buffer.self)
+            return unsafe unsafeDowncast(buffer, to: Buffer.self)
         }
 
         @usableFromInline
         func copy(minimumCapacity: Int) -> Buffer {
             #if DEBUG
-            _DequeBufferDebug._copyCount += 1
+            unsafe (_DequeBufferDebug._copyCount += 1)
             #endif
-            let requestedCapacity = Swift.max(minimumCapacity, header.count, 4)
-            let newBuffer = Buffer.create(minimumCapacity: requestedCapacity)
+            let requestedCapacity = Swift.max(minimumCapacity, unsafe header.count, 4)
+            let newBuffer = unsafe Buffer.create(minimumCapacity: requestedCapacity)
             // Note: newBuffer.header.capacity is already set to actual capacity by create()
 
-            newBuffer.header.count = header.count
-            newBuffer.header.head = 0
+            unsafe (newBuffer.header.count = header.count)
+            unsafe (newBuffer.header.head = 0)
 
             // Copy elements in logical order
-            withUnsafeMutablePointerToElements { src in
-                newBuffer.withUnsafeMutablePointerToElements { dst in
-                    let count = header.count
-                    let cap = header.capacity
-                    let head = header.head
+            unsafe withUnsafeMutablePointerToElements { src in
+                unsafe newBuffer.withUnsafeMutablePointerToElements { dst in
+                    let count = unsafe header.count
+                    let cap = unsafe header.capacity
+                    let head = unsafe header.head
 
                     for i in 0..<count {
                         let srcIndex = (head + i) % cap
-                        (dst + i).initialize(to: src[srcIndex])
+                        unsafe (dst + i).initialize(to: src[srcIndex])
                     }
                 }
             }
 
-            return newBuffer
+            return unsafe newBuffer
         }
 
         deinit {
-            withUnsafeMutablePointers { header, elements in
-                let count = header.pointee.count
-                let capacity = header.pointee.capacity
-                let head = header.pointee.head
+            unsafe withUnsafeMutablePointers { header, elements in
+                let count = unsafe header.pointee.count
+                let capacity = unsafe header.pointee.capacity
+                let head = unsafe header.pointee.head
 
                 for i in 0..<count {
                     let index = (head + i) % capacity
-                    (elements + index).deinitialize(count: 1)
+                    unsafe (elements + index).deinitialize(count: 1)
                 }
             }
         }
@@ -135,12 +137,12 @@ extension Deque.Storage {
 extension Deque.Storage {
     @usableFromInline
     var count: Int {
-        buffer.header.count
+        unsafe buffer.header.count
     }
 
     @usableFromInline
     var capacity: Int {
-        buffer.header.capacity
+        unsafe buffer.header.capacity
     }
 
     @usableFromInline
@@ -158,9 +160,9 @@ extension Deque.Storage {
     mutating func ensureUnique(minimumCapacity: Int = 0) {
         let requiredCapacity = Swift.max(minimumCapacity, count)
 
-        if !isKnownUniquelyReferenced(&buffer) || capacity < requiredCapacity {
+        if unsafe !isKnownUniquelyReferenced(&buffer) || capacity < requiredCapacity {
             let newCapacity = Swift.max(requiredCapacity, capacity * 2, 4)
-            buffer = buffer.copy(minimumCapacity: newCapacity)
+            unsafe self.buffer = buffer.copy(minimumCapacity: newCapacity)
         }
     }
 }
@@ -171,21 +173,21 @@ extension Deque.Storage {
     /// Physical index in the buffer for a logical index.
     @usableFromInline
     func physicalIndex(_ logicalIndex: Int) -> Int {
-        (buffer.header.head + logicalIndex) % buffer.header.capacity
+        unsafe (buffer.header.head + logicalIndex) % buffer.header.capacity
     }
 
     /// Access element at logical index.
     @usableFromInline
     subscript(_ index: Int) -> Element {
         get {
-            buffer.withUnsafeMutablePointerToElements { elements in
-                elements[physicalIndex(index)]
+            unsafe buffer.withUnsafeMutablePointerToElements { elements in
+                unsafe elements[physicalIndex(index)]
             }
         }
         set {
             ensureUnique()
-            buffer.withUnsafeMutablePointerToElements { elements in
-                elements[physicalIndex(index)] = newValue
+            unsafe buffer.withUnsafeMutablePointerToElements { elements in
+                unsafe (elements[physicalIndex(index)] = newValue)
             }
         }
     }
@@ -199,10 +201,10 @@ extension Deque.Storage {
     mutating func append(_ element: Element) {
         ensureUnique(minimumCapacity: count + 1)
 
-        buffer.withUnsafeMutablePointers { header, elements in
-            let tail = (header.pointee.head + header.pointee.count) % header.pointee.capacity
-            (elements + tail).initialize(to: element)
-            header.pointee.count += 1
+        unsafe buffer.withUnsafeMutablePointers { header, elements in
+            let tail = unsafe (header.pointee.head + header.pointee.count) % header.pointee.capacity
+            unsafe (elements + tail).initialize(to: element)
+            unsafe (header.pointee.count += 1)
         }
     }
 
@@ -211,12 +213,12 @@ extension Deque.Storage {
     mutating func prepend(_ element: Element) {
         ensureUnique(minimumCapacity: count + 1)
 
-        buffer.withUnsafeMutablePointers { header, elements in
-            let capacity = header.pointee.capacity
-            let newHead = (header.pointee.head - 1 + capacity) % capacity
-            (elements + newHead).initialize(to: element)
-            header.pointee.head = newHead
-            header.pointee.count += 1
+        unsafe buffer.withUnsafeMutablePointers { header, elements in
+            let capacity = unsafe header.pointee.capacity
+            let newHead = unsafe (header.pointee.head - 1 + capacity) % capacity
+            unsafe (elements + newHead).initialize(to: element)
+            unsafe (header.pointee.head = newHead)
+            unsafe (header.pointee.count += 1)
         }
     }
 }
@@ -230,10 +232,10 @@ extension Deque.Storage {
         precondition(!isEmpty, "Cannot remove from empty deque")
         ensureUnique()
 
-        return buffer.withUnsafeMutablePointers { header, elements in
-            header.pointee.count -= 1
-            let tail = (header.pointee.head + header.pointee.count) % header.pointee.capacity
-            return (elements + tail).move()
+        return unsafe buffer.withUnsafeMutablePointers { header, elements in
+            unsafe (header.pointee.count -= 1)
+            let tail = unsafe (header.pointee.head + header.pointee.count) % header.pointee.capacity
+            return unsafe (elements + tail).move()
         }
     }
 
@@ -243,12 +245,12 @@ extension Deque.Storage {
         precondition(!isEmpty, "Cannot remove from empty deque")
         ensureUnique()
 
-        return buffer.withUnsafeMutablePointers { header, elements in
-            let oldHead = header.pointee.head
-            let capacity = header.pointee.capacity
-            header.pointee.head = (oldHead + 1) % capacity
-            header.pointee.count -= 1
-            return (elements + oldHead).move()
+        return unsafe buffer.withUnsafeMutablePointers { header, elements in
+            let oldHead = unsafe header.pointee.head
+            let capacity = unsafe header.pointee.capacity
+            unsafe (header.pointee.head = (oldHead + 1) % capacity)
+            unsafe (header.pointee.count -= 1)
+            return unsafe (elements + oldHead).move()
         }
     }
 }
@@ -261,21 +263,21 @@ extension Deque.Storage {
     mutating func removeAll(keepingCapacity: Bool = false) {
         if keepingCapacity {
             ensureUnique()
-            buffer.withUnsafeMutablePointers { header, elements in
-                let count = header.pointee.count
-                let capacity = header.pointee.capacity
-                let head = header.pointee.head
+            unsafe buffer.withUnsafeMutablePointers { header, elements in
+                let count = unsafe header.pointee.count
+                let capacity = unsafe header.pointee.capacity
+                let head = unsafe header.pointee.head
 
                 for i in 0..<count {
                     let index = (head + i) % capacity
-                    (elements + index).deinitialize(count: 1)
+                    unsafe (elements + index).deinitialize(count: 1)
                 }
 
-                header.pointee.count = 0
-                header.pointee.head = 0
+                unsafe (header.pointee.count = 0)
+                unsafe (header.pointee.head = 0)
             }
         } else {
-            buffer = Buffer.create(minimumCapacity: 0)
+            unsafe self.buffer = Buffer.create(minimumCapacity: 0)
         }
     }
 }
