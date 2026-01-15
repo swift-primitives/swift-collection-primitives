@@ -102,9 +102,54 @@ extension Container.Array.Bounded {
     }
 }
 
-// MARK: - Pointer Access
+// MARK: - Span Access (Normative)
 
 extension Container.Array.Bounded {
+    /// Read-only span of the array elements.
+    ///
+    /// ## Lifetime Contract
+    ///
+    /// - The span is valid ONLY for the duration of the borrow of `self`.
+    /// - The span MUST NOT be stored, returned, or allowed to escape.
+    /// - The returned span is lifetime-dependent; the compiler is expected to diagnose escapes.
+    /// - Violating this contract is undefined behavior.
+    @inlinable
+    public var span: Span<Element> {
+        @_lifetime(borrow self)
+        borrowing get {
+            // Note: storage is always non-nil (sentinel pointer for empty case)
+            unsafe Span(_unsafeStart: storage, count: count)
+        }
+    }
+
+    /// Mutable span of the array elements.
+    ///
+    /// ## Lifetime Contract
+    ///
+    /// - The span is valid ONLY for the duration of the exclusive mutable borrow.
+    /// - The span MUST NOT be stored, returned, or allowed to escape.
+    /// - The returned span is lifetime-dependent; the compiler is expected to diagnose escapes.
+    /// - No concurrent mutable borrows are permitted.
+    /// - No mutable + immutable borrow overlap is permitted.
+    /// - Violating this contract is undefined behavior.
+    @inlinable
+    public var mutableSpan: MutableSpan<Element> {
+        @_lifetime(&self)
+        mutating get {
+            // Note: storage is always non-nil (sentinel pointer for empty case)
+            unsafe MutableSpan(_unsafeStart: storage, count: count)
+        }
+    }
+}
+
+// MARK: - Pointer Access (Escape Hatch)
+
+extension Container.Array.Bounded {
+    /// Provides read-only access to the underlying contiguous storage.
+    ///
+    /// - Warning: This is an escape hatch for C interop. Prefer `span` for safe access.
+    /// - Warning: The pointer must not escape the closure scope.
+    @unsafe
     @inlinable
     public func withUnsafeBufferPointer<R, E: Swift.Error>(
         _ body: (UnsafeBufferPointer<Element>) throws(E) -> R
@@ -112,6 +157,11 @@ extension Container.Array.Bounded {
         try unsafe body(UnsafeBufferPointer(start: count > 0 ? storage : nil, count: count))
     }
 
+    /// Provides mutable access to the underlying contiguous storage.
+    ///
+    /// - Warning: This is an escape hatch for C interop. Prefer `mutableSpan` for safe access.
+    /// - Warning: The pointer must not escape the closure scope.
+    @unsafe
     @inlinable
     public mutating func withUnsafeMutableBufferPointer<R, E: Swift.Error>(
         _ body: (UnsafeMutableBufferPointer<Element>) throws(E) -> R

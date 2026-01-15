@@ -63,6 +63,7 @@ extension Container.Array.Unbounded {
     /// The initial capacity hint from the generic parameter.
     @inlinable
     public var initialCapacityHint: Int { N }
+
 }
 
 // MARK: - Core Operations
@@ -136,13 +137,70 @@ extension Container.Array.Unbounded {
     }
 }
 
-// MARK: - Buffer Access
+// MARK: - Span Access (Normative, Closure-Based)
+
+extension Container.Array.Unbounded {
+    /// Provides read-only span access to the array elements.
+    ///
+    /// ## Lifetime Contract
+    ///
+    /// - The span is valid ONLY for the duration of the closure.
+    /// - The span MUST NOT be stored, returned, or allowed to escape.
+    /// - Violating this contract is undefined behavior.
+    ///
+    /// - Parameter body: A closure that receives a span view of the elements.
+    /// - Returns: The value returned by `body`.
+    /// - Throws: The error thrown by the closure.
+    @inlinable
+    public func withSpan<R, E: Swift.Error>(
+        _ body: (Span<Element>) throws(E) -> R
+    ) throws(E) -> R {
+        if let storage = unsafe _storage {
+            let span = unsafe Span(_unsafeStart: storage, count: _count)
+            return try body(span)
+        } else {
+            // Empty array: use stdlib Array's span for empty case
+            let empty: [Element] = []
+            return try body(empty.span)
+        }
+    }
+
+    /// Provides mutable span access to the array elements.
+    ///
+    /// ## Lifetime Contract
+    ///
+    /// - The span is valid ONLY for the duration of the closure.
+    /// - The span MUST NOT be stored, returned, or allowed to escape.
+    /// - No concurrent mutable borrows are permitted.
+    /// - Violating this contract is undefined behavior.
+    ///
+    /// - Parameter body: A closure that receives a mutable span view of the elements.
+    /// - Returns: The value returned by `body`.
+    /// - Throws: The error thrown by the closure.
+    @inlinable
+    public mutating func withMutableSpan<R, E: Swift.Error>(
+        _ body: (inout MutableSpan<Element>) throws(E) -> R
+    ) throws(E) -> R {
+        if let storage = unsafe _storage {
+            var span = unsafe MutableSpan(_unsafeStart: storage, count: _count)
+            return try body(&span)
+        } else {
+            // Empty array: create empty MutableSpan using sentinel pointer
+            let sentinel = unsafe UnsafeMutablePointer<Element>(bitPattern: MemoryLayout<Element>.alignment)!
+            var span = unsafe MutableSpan(_unsafeStart: sentinel, count: 0)
+            return try body(&span)
+        }
+    }
+}
+
+// MARK: - Buffer Access (Escape Hatch)
 
 extension Container.Array.Unbounded {
     /// Provides read-only access to the underlying contiguous storage.
     ///
-    /// The buffer pointer is valid only for the duration of the closure.
-    /// Do not store or return the pointer.
+    /// - Warning: This is an escape hatch for C interop. Prefer `span` for safe access.
+    /// - Warning: The pointer must not escape the closure scope.
+    @unsafe
     @inlinable
     public func withUnsafeBufferPointer<R, E: Error>(
         _ body: (UnsafeBufferPointer<Element>) throws(E) -> R
@@ -156,8 +214,9 @@ extension Container.Array.Unbounded {
 
     /// Provides mutable access to the underlying contiguous storage.
     ///
-    /// The buffer pointer is valid only for the duration of the closure.
-    /// Do not store or return the pointer. Do not reallocate during the closure.
+    /// - Warning: This is an escape hatch for C interop. Prefer `mutableSpan` for safe access.
+    /// - Warning: The pointer must not escape the closure scope.
+    @unsafe
     @inlinable
     public mutating func withUnsafeMutableBufferPointer<R, E: Error>(
         _ body: (UnsafeMutableBufferPointer<Element>) throws(E) -> R

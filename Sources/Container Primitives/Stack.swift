@@ -106,9 +106,54 @@ extension Stack {
     }
 }
 
-// MARK: - Pointer Access
+// MARK: - Span Access (Normative)
+
+extension Stack {
+    /// Read-only span of the stack elements.
+    ///
+    /// ## Lifetime Contract
+    ///
+    /// - The span is valid ONLY for the duration of the borrow of `self`.
+    /// - The span MUST NOT be stored, returned, or allowed to escape.
+    /// - The returned span is lifetime-dependent; the compiler is expected to diagnose escapes.
+    /// - Violating this contract is undefined behavior.
+    @inlinable
+    public var span: Span<Element> {
+        @_lifetime(borrow self)
+        borrowing get {
+            // storage is always non-nil (sentinel for empty case)
+            unsafe Span(_unsafeStart: storage, count: _count)
+        }
+    }
+
+    /// Mutable span of the stack elements.
+    ///
+    /// ## Lifetime Contract
+    ///
+    /// - The span is valid ONLY for the duration of the exclusive mutable borrow.
+    /// - The span MUST NOT be stored, returned, or allowed to escape.
+    /// - The returned span is lifetime-dependent; the compiler is expected to diagnose escapes.
+    /// - No concurrent mutable borrows are permitted.
+    /// - No mutable + immutable borrow overlap is permitted.
+    /// - Violating this contract is undefined behavior.
+    @inlinable
+    public var mutableSpan: MutableSpan<Element> {
+        @_lifetime(&self)
+        mutating get {
+            // storage is always non-nil (sentinel for empty case)
+            unsafe MutableSpan(_unsafeStart: storage, count: _count)
+        }
+    }
+}
+
+// MARK: - Pointer Access (Escape Hatch)
 
 extension Stack where Element: ~Copyable {
+    /// Provides read-only access to the element at the specified index.
+    ///
+    /// - Warning: This is an escape hatch for C interop. Prefer `span` for safe access.
+    /// - Warning: The pointer must not escape the closure scope.
+    @unsafe
     @inlinable
     public func withUnsafePointer<R, E: Swift.Error>(
         at index: Int,
@@ -118,6 +163,11 @@ extension Stack where Element: ~Copyable {
         return try unsafe body(storage + index)
     }
 
+    /// Provides mutable access to the element at the specified index.
+    ///
+    /// - Warning: This is an escape hatch for C interop. Prefer `mutableSpan` for safe access.
+    /// - Warning: The pointer must not escape the closure scope.
+    @unsafe
     @inlinable
     public mutating func withUnsafeMutablePointer<R, E: Swift.Error>(
         at index: Int,
