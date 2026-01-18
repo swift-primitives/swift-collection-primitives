@@ -135,8 +135,7 @@ extension Set.Ordered {
     @inlinable
     @discardableResult
     public mutating func insert(_ element: Element) -> (inserted: Bool, index: Int) {
-        ensureUnique()
-        return storage.insert(element)
+        storage.insert(element)
     }
 
     /// Removes an element from the set.
@@ -147,8 +146,7 @@ extension Set.Ordered {
     @inlinable
     @discardableResult
     public mutating func remove(_ element: Element) -> Element? {
-        ensureUnique()
-        return storage.remove(element)
+        storage.remove(element)
     }
 
     /// Returns whether the set contains the given element.
@@ -170,7 +168,6 @@ extension Set.Ordered {
     /// - Parameter minimumCapacity: The minimum number of elements.
     @inlinable
     public mutating func reserve(_ minimumCapacity: Int) {
-        ensureUnique()
         storage.reserve(minimumCapacity)
     }
 
@@ -179,7 +176,6 @@ extension Set.Ordered {
     /// - Parameter keepingCapacity: Whether to keep the current capacity.
     @inlinable
     public mutating func clear(keepingCapacity: Bool = false) {
-        ensureUnique()
         storage.clear(keepingCapacity: keepingCapacity)
     }
 }
@@ -267,8 +263,13 @@ extension Set.Ordered: CustomStringConvertible {
 
 extension Set.Ordered {
     /// Storage identity for CoW testing.
+    ///
+    /// Returns the identity of the underlying elements array buffer.
     @usableFromInline
     internal var _identity: ObjectIdentifier {
-        ObjectIdentifier(storage)
+        // Use the identity of the elements array's buffer
+        unsafe withUnsafePointer(to: storage.elements) { ptr in
+            unsafe ObjectIdentifier(ptr as AnyObject)
+        }
     }
 }

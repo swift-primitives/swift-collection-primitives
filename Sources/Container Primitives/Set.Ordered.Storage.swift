@@ -10,11 +10,13 @@
 // ===----------------------------------------------------------------------===//
 
 extension Set.Ordered {
-    /// Type-local CoW storage for ordered set.
+    /// Inlined value-type storage for ordered set.
     ///
     /// Combines a contiguous array for order with a hash table for O(1) lookups.
+    /// Uses value semantics - CoW is provided by the underlying `ContiguousArray`
+    /// and `Dictionary` types.
     @usableFromInline
-    final class Storage {
+    struct Storage {
         /// Elements in insertion order.
         @usableFromInline
         var elements: ContiguousArray<Element>
@@ -23,13 +25,13 @@ extension Set.Ordered {
         @usableFromInline
         var indices: [Element: Int]
 
-        @usableFromInline
+        @inlinable
         init() {
             self.elements = []
             self.indices = [:]
         }
 
-        @usableFromInline
+        @inlinable
         init(elements: ContiguousArray<Element>, indices: [Element: Int]) {
             self.elements = elements
             self.indices = indices
@@ -40,58 +42,37 @@ extension Set.Ordered {
 // MARK: - Storage Properties
 
 extension Set.Ordered.Storage {
-    @usableFromInline
+    @inlinable
     var count: Int {
         elements.count
     }
 
-    @usableFromInline
+    @inlinable
     var isEmpty: Bool {
         elements.isEmpty
     }
 
-    @usableFromInline
+    @inlinable
     var capacity: Int {
         elements.capacity
-    }
-}
-
-// MARK: - Copy
-
-extension Set.Ordered.Storage {
-    @usableFromInline
-    func copy() -> Set<Element>.Ordered.Storage {
-        Set<Element>.Ordered.Storage(elements: elements, indices: indices)
-    }
-}
-
-// MARK: - Uniqueness Helper
-
-extension Set.Ordered {
-    /// Ensures storage is uniquely referenced before mutation.
-    @usableFromInline
-    mutating func ensureUnique() {
-        if !isKnownUniquelyReferenced(&storage) {
-            storage = storage.copy()
-        }
     }
 }
 
 // MARK: - Core Operations
 
 extension Set.Ordered.Storage {
-    @usableFromInline
+    @inlinable
     func index(_ element: Element) -> Int? {
         indices[element]
     }
 
-    @usableFromInline
+    @inlinable
     func contains(_ element: Element) -> Bool {
         indices[element] != nil
     }
 
-    @usableFromInline
-    func insert(_ element: Element) -> (inserted: Bool, index: Int) {
+    @inlinable
+    mutating func insert(_ element: Element) -> (inserted: Bool, index: Int) {
         if let existing = indices[element] {
             return (false, existing)
         }
@@ -101,8 +82,8 @@ extension Set.Ordered.Storage {
         return (true, index)
     }
 
-    @usableFromInline
-    func remove(_ element: Element) -> Element? {
+    @inlinable
+    mutating func remove(_ element: Element) -> Element? {
         guard let index = indices.removeValue(forKey: element) else {
             return nil
         }
@@ -120,14 +101,14 @@ extension Set.Ordered.Storage {
 // MARK: - Capacity
 
 extension Set.Ordered.Storage {
-    @usableFromInline
-    func reserve(_ minimumCapacity: Int) {
+    @inlinable
+    mutating func reserve(_ minimumCapacity: Int) {
         elements.reserveCapacity(minimumCapacity)
         indices.reserveCapacity(minimumCapacity)
     }
 
-    @usableFromInline
-    func clear(keepingCapacity: Bool) {
+    @inlinable
+    mutating func clear(keepingCapacity: Bool) {
         if keepingCapacity {
             elements.removeAll(keepingCapacity: true)
             indices.removeAll(keepingCapacity: true)
@@ -140,8 +121,4 @@ extension Set.Ordered.Storage {
 
 // MARK: - Sendable
 
-// Storage is @unchecked Sendable because:
-// - CoW semantics ensure storage is never mutated when shared
-// - ensureUnique() is called before any mutation
-// - When shared across threads, storage is immutable
-extension Set.Ordered.Storage: @unchecked Sendable where Element: Sendable {}
+extension Set.Ordered.Storage: Sendable where Element: Sendable {}
