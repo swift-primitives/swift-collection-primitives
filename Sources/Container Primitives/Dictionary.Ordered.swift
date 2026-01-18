@@ -257,7 +257,12 @@ extension Dictionary.Ordered: CustomStringConvertible {
 // MARK: - Internal Identity (for testing)
 
 extension Dictionary.Ordered {
-    /// Storage identity for CoW testing.
+    /// A best-effort identity token for debugging and diagnostics.
+    ///
+    /// Delegates to `_keys._identity`. See ``Set.Ordered/_identity`` for limitations.
+    ///
+    /// Do not use this to prove Copy-on-Write behavior for stdlib-backed storage.
+    /// Prefer functional tests that verify mutation does not affect prior copies.
     @usableFromInline
     internal var _identity: ObjectIdentifier {
         _keys._identity

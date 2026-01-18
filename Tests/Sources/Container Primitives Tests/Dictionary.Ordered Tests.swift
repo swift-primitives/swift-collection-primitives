@@ -247,29 +247,42 @@ struct OrderedDictionaryTests {
     }
 
     // MARK: - Copy-on-Write
+    //
+    // Note: Identity-based CoW tests are not reliable for stdlib-backed storage.
+    // See Set.Ordered._identity documentation. Use functional tests instead.
 
-    @Test("CoW: copy shares storage")
-    func cowSharesStorage() {
-        var dict = [String: Int].Ordered()
-        dict["a"] = 1
-        let copy = dict
+    @Test("CoW: mutation does not affect original")
+    func cowMutationDoesNotAffectOriginal() {
+        var original = [String: Int].Ordered()
+        original["a"] = 1
+        original["b"] = 2
+        original["c"] = 3
 
-        #expect(dict._identity == copy._identity)
+        var copy = original
+        copy["d"] = 4
+        copy["a"] = nil
+
+        #expect(Array(original.keys) == ["a", "b", "c"])
+        #expect(Array(copy.keys) == ["b", "c", "d"])
+        #expect(original.count == 3)
+        #expect(copy.count == 3)
     }
 
-    @Test("CoW: mutation triggers copy")
-    func cowMutationTriggersCopy() {
-        var dict = [String: Int].Ordered()
-        dict["a"] = 1
-        var copy = dict
+    @Test("CoW: multiple copies are independent")
+    func cowMultipleCopiesIndependent() {
+        var original = [String: Int].Ordered()
+        original["a"] = 1
+        original["b"] = 2
 
-        #expect(dict._identity == copy._identity)
+        var copy1 = original
+        var copy2 = original
 
-        copy["b"] = 2
+        copy1["c"] = 3
+        copy2["a"] = nil
 
-        #expect(dict._identity != copy._identity)
-        #expect(dict.count == 1)
-        #expect(copy.count == 2)
+        #expect(Array(original.keys) == ["a", "b"])
+        #expect(Array(copy1.keys) == ["a", "b", "c"])
+        #expect(Array(copy2.keys) == ["b"])
     }
 
     // MARK: - Properties

@@ -262,12 +262,25 @@ extension Set.Ordered: CustomStringConvertible {
 // MARK: - Internal Identity (for testing)
 
 extension Set.Ordered {
-    /// Storage identity for CoW testing.
+    /// A best-effort identity token for debugging and diagnostics.
     ///
-    /// Returns the identity of the underlying elements array buffer.
+    /// ## Limitations
+    ///
+    /// This value is **not** a stability or CoW-correctness guarantee.
+    ///
+    /// - **Not reliably observable** for containers built from stdlib CoW types
+    ///   (`Array`, `ContiguousArray`, `Dictionary`), where buffer identity is an
+    ///   internal implementation detail that cannot be accessed from outside.
+    /// - **Meaningful only** when the container has storage with explicit reference
+    ///   identity that this module controls (e.g., `ManagedBuffer`-backed containers
+    ///   like `Deque`).
+    ///
+    /// Do not use this to prove Copy-on-Write behavior for stdlib-backed storage.
+    /// Prefer functional tests that verify mutation does not affect prior copies.
     @usableFromInline
     internal var _identity: ObjectIdentifier {
-        // Use the identity of the elements array's buffer
+        // Best-effort: attempts to get buffer identity, but stdlib CoW containers
+        // do not expose their internal buffer reference in a stable way.
         unsafe withUnsafePointer(to: storage.elements) { ptr in
             unsafe ObjectIdentifier(ptr as AnyObject)
         }

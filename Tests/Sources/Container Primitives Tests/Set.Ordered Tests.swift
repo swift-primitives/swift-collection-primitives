@@ -173,31 +173,12 @@ struct OrderedSetTests {
     }
 
     // MARK: - Copy-on-Write
+    //
+    // Note: Identity-based CoW tests are not reliable for stdlib-backed storage.
+    // See Set.Ordered._identity documentation. Use functional tests instead.
 
-    @Test("CoW: copy shares storage")
-    func cowSharesStorage() {
-        let a: Set<Int>.Ordered = [1, 2, 3]
-        let b = a
-
-        #expect(a._identity == b._identity)
-    }
-
-    @Test("CoW: mutation triggers copy")
-    func cowMutationTriggersCopy() {
-        let a: Set<Int>.Ordered = [1, 2, 3]
-        var b = a
-
-        #expect(a._identity == b._identity)
-
-        b.insert(4)
-
-        #expect(a._identity != b._identity)
-        #expect(a.count == 3)
-        #expect(b.count == 4)
-    }
-
-    @Test("CoW: original unchanged")
-    func cowOriginalUnchanged() {
+    @Test("CoW: mutation does not affect original")
+    func cowMutationDoesNotAffectOriginal() {
         let original: Set<Int>.Ordered = [1, 2, 3]
         var copy = original
 
@@ -206,6 +187,22 @@ struct OrderedSetTests {
 
         #expect(Array(original) == [1, 2, 3])
         #expect(Array(copy) == [1, 3, 4])
+        #expect(original.count == 3)
+        #expect(copy.count == 3)
+    }
+
+    @Test("CoW: multiple copies are independent")
+    func cowMultipleCopiesIndependent() {
+        let original: Set<Int>.Ordered = [1, 2, 3]
+        var copy1 = original
+        var copy2 = original
+
+        copy1.insert(4)
+        copy2.remove(1)
+
+        #expect(Array(original) == [1, 2, 3])
+        #expect(Array(copy1) == [1, 2, 3, 4])
+        #expect(Array(copy2) == [2, 3])
     }
 
     // MARK: - Properties
