@@ -1,7 +1,7 @@
 // Collection.Rotated Tests.swift
 
 import Testing
-@testable import Container_Primitives
+@testable import Collection_Primitives
 
 @Suite("Collection.Rotated")
 struct CollectionRotatedTests {
