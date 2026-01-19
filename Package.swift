@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-container-primitives",
+    name: "swift-collection-primitives",
     platforms: [
         .macOS(.v26),
         .iOS(.v26),
@@ -13,19 +13,17 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Container Primitives",
-            targets: ["Container Primitives"]
+            name: "Collection Primitives",
+            targets: ["Collection Primitives"]
         )
-    ],
-    dependencies: [
-        .package(path: "../swift-storage-primitives")
     ],
     targets: [
         .target(
-            name: "Container Primitives",
-            dependencies: [
-                .product(name: "Storage Primitives", package: "swift-storage-primitives")
-            ]
+            name: "Collection Primitives"
+        ),
+        .testTarget(
+            name: "Collection Primitives Tests",
+            dependencies: ["Collection Primitives"]
         )
     ],
     swiftLanguageModes: [.v6]
