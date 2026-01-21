@@ -17,9 +17,15 @@ let package = Package(
             targets: ["Collection Primitives"]
         )
     ],
+    dependencies: [
+        .package(path: "../swift-index-primitives"),
+    ],
     targets: [
         .target(
-            name: "Collection Primitives"
+            name: "Collection Primitives",
+            dependencies: [
+                .product(name: "Index Primitives", package: "swift-index-primitives"),
+            ]
         ),
         .testTarget(
             name: "Collection Primitives Tests",
