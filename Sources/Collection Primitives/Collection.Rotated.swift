@@ -76,5 +76,6 @@ extension Collection {
     /// A rotated view of a collection.
     ///
     /// Typealias for ``__CollectionRotated``. See that type for full documentation.
-    public typealias Rotated = __CollectionRotated
+    public typealias Rotated<Base: RandomAccessCollection & Sendable> = __CollectionRotated<Base>
+        where Base.Element: Sendable
 }
