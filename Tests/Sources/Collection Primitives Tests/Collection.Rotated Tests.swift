@@ -93,14 +93,15 @@ struct CollectionRotatedTests {
     func startIndexIsZero() {
         let rotated = Collection.Rotated(base: [1, 2, 3], startOffset: 1)
 
-        #expect(rotated.startIndex == 0)
+        #expect(rotated.startIndex == .zero)
     }
 
     @Test("endIndex equals count")
     func endIndexEqualsCount() {
         let rotated = Collection.Rotated(base: [1, 2, 3], startOffset: 1)
+        let expected: Index<Int> = 3
 
-        #expect(rotated.endIndex == 3)
+        #expect(rotated.endIndex == expected)
     }
 
     // MARK: - RandomAccessCollection

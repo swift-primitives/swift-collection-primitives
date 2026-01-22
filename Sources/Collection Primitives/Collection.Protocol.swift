@@ -9,21 +9,21 @@ extension Collection {
     ///
     /// ## Conforming to Collection.Protocol
     ///
-    /// Implement the required members:
+    /// Implement the required members using typed indices:
     ///
     /// ```swift
     /// extension MyContainer: Collection.`Protocol` {
-    ///     typealias Index = Int
+    ///     typealias Index = Index_Primitives.Index<Element>
     ///
-    ///     var startIndex: Int { 0 }
-    ///     var endIndex: Int { storage.count }
+    ///     var startIndex: Index { .zero }
+    ///     var endIndex: Index { Index(__unchecked: (), position: storage.count) }
     ///
-    ///     subscript(position: Int) -> Element {
-    ///         storage[position]
+    ///     subscript(position: Index) -> Element {
+    ///         storage[position.position.rawValue]
     ///     }
     ///
-    ///     func index(after i: Int) -> Int {
-    ///         i + 1
+    ///     func index(after i: Index) -> Index {
+    ///         (i + Index.Offset(1))!
     ///     }
     ///
     ///     func makeIterator() -> Array<Element>.Iterator {

@@ -1,6 +1,8 @@
 // Collection.Rotated.swift
 // A rotated view of a collection.
 
+public import Index_Primitives
+
 /// Hoisted type for `Collection.Rotated`.
 ///
 /// A collection that presents a rotated view of another collection.
@@ -27,11 +29,16 @@
 ///   `Collection.Rotated` (via typealias).
 public struct __CollectionRotated<Base: RandomAccessCollection & Sendable>: RandomAccessCollection, Sendable
 where Base.Element: Sendable {
+    public typealias Index = Index_Primitives.Index<Base.Element>
+
     @usableFromInline
     let base: Base
 
     @usableFromInline
-    let startOffset: Int
+    let normalizedOffset: Index.Offset
+
+    @usableFromInline
+    let _count: Index.Count
 
     /// Creates a rotated view of the given collection.
     ///
@@ -42,32 +49,44 @@ where Base.Element: Sendable {
     @inlinable
     public init(base: Base, startOffset: Int) {
         self.base = base
-        self.startOffset = base.isEmpty ? 0 : startOffset % base.count
+        let count = base.count
+        self.normalizedOffset = base.isEmpty ? Index.Offset(0) : Index.Offset(startOffset % count)
+        self._count = Index.Count(__unchecked: count)
     }
 
     @inlinable
-    public var startIndex: Int { 0 }
+    public var startIndex: Index { .zero }
 
     @inlinable
-    public var endIndex: Int { base.count }
+    public var endIndex: Index {
+        Index(__unchecked: (), position: _count.rawValue)
+    }
 
     @inlinable
-    public subscript(position: Int) -> Base.Element {
-        let actualIndex = (startOffset + position) % base.count
+    public subscript(position: Index) -> Base.Element {
+        let actualIndex = (normalizedOffset.rawValue + position.position.rawValue) % _count.rawValue
         return base[base.index(base.startIndex, offsetBy: actualIndex)]
     }
 
     @inlinable
-    public func index(after i: Int) -> Int { i + 1 }
+    public func index(after i: Index) -> Index {
+        (i + Index.Offset(1))!
+    }
 
     @inlinable
-    public func index(before i: Int) -> Int { i - 1 }
+    public func index(before i: Index) -> Index {
+        (i - Index.Offset(1))!
+    }
 
     @inlinable
-    public func index(_ i: Int, offsetBy distance: Int) -> Int { i + distance }
+    public func index(_ i: Index, offsetBy distance: Int) -> Index {
+        (i + Index.Offset(distance))!
+    }
 
     @inlinable
-    public func distance(from start: Int, to end: Int) -> Int { end - start }
+    public func distance(from start: Index, to end: Index) -> Int {
+        (end - start).rawValue
+    }
 }
 
 // MARK: - Collection.Rotated typealias

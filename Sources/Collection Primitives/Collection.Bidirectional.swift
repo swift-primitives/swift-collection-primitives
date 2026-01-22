@@ -15,17 +15,20 @@ extension Collection {
     ///
     /// ## Conforming to Collection.Bidirectional
     ///
-    /// Implement `index(before:)` in addition to `Collection.Indexed` requirements:
+    /// Implement `index(before:)` in addition to `Collection.Indexed` requirements
+    /// using typed indices:
     ///
     /// ```swift
     /// extension MyContainer: Collection.Bidirectional {
+    ///     typealias Index = Index_Primitives.Index<Element>
+    ///
     ///     // From Collection.Indexed:
-    ///     var startIndex: Int { 0 }
-    ///     var endIndex: Int { count }
-    ///     func index(after i: Int) -> Int { i + 1 }
+    ///     var startIndex: Index { .zero }
+    ///     var endIndex: Index { Index(__unchecked: (), position: count) }
+    ///     func index(after i: Index) -> Index { (i + Index.Offset(1))! }
     ///
     ///     // From Collection.Bidirectional:
-    ///     func index(before i: Int) -> Int { i - 1 }
+    ///     func index(before i: Index) -> Index { (i - Index.Offset(1))! }
     /// }
     /// ```
     ///

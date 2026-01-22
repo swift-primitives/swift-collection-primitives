@@ -32,25 +32,25 @@ extension Collection {
     ///
     /// ## Conforming to Collection.Indexed
     ///
-    /// Implement the required index navigation members, then add subscript
-    /// as a direct member:
+    /// Implement the required index navigation members using typed indices,
+    /// then add subscript as a direct member:
     ///
     /// ```swift
     /// struct TokenContainer: ~Copyable {
     ///     var storage: UnsafeMutableBufferPointer<Token>
-    ///     var count: Int
+    ///     var _count: Int
     /// }
     ///
     /// extension TokenContainer: Collection.Indexed {
-    ///     typealias Index = Int
+    ///     typealias Index = Index_Primitives.Index<Token>
     ///
-    ///     var startIndex: Int { 0 }
-    ///     var endIndex: Int { count }
-    ///     func index(after i: Int) -> Int { i + 1 }
+    ///     var startIndex: Index { .zero }
+    ///     var endIndex: Index { Index(__unchecked: (), position: _count) }
+    ///     func index(after i: Index) -> Index { (i + Index.Offset(1))! }
     ///
     ///     // Element access as direct member (not protocol requirement)
-    ///     subscript(position: Int) -> Token {
-    ///         _read { yield storage[position] }
+    ///     subscript(position: Index) -> Token {
+    ///         _read { yield storage[position.position.rawValue] }
     ///     }
     /// }
     /// ```
