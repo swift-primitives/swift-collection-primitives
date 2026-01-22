@@ -20,6 +20,7 @@ let package = Package(
     dependencies: [
         .package(path: "../swift-comparison-primitives"),
         .package(path: "../swift-index-primitives"),
+        .package(path: "../swift-ordering-primitives"),
         .package(path: "../swift-property-primitives"),
         .package(path: "../swift-sequence-primitives"),
     ],
@@ -29,6 +30,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Comparison Primitives", package: "swift-comparison-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
+                .product(name: "Ordering Primitives", package: "swift-ordering-primitives"),
                 .product(name: "Property Primitives", package: "swift-property-primitives"),
                 .product(name: "Sequence Primitives", package: "swift-sequence-primitives"),
             ]
