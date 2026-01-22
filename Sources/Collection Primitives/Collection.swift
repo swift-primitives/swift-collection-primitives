@@ -9,7 +9,21 @@
 /// | Protocol | Description |
 /// |----------|-------------|
 /// | `Collection.Protocol` | Indexed, multi-pass iteration (extends `Sequence.Protocol`) |
+/// | `Collection.Bidirectional` | Backward traversal via `index(before:)` |
+/// | `Collection.Access.Random` | O(1) index arithmetic guarantee |
 /// | `Collection.Clearable` | Collection that can be cleared for consuming iteration |
+///
+/// ### Protocol Hierarchy
+///
+/// ```
+/// Sequence.Protocol
+///       ↑
+/// Collection.Protocol        ← index(after:)
+///       ↑
+/// Collection.Bidirectional   ← index(before:)
+///       ↑
+/// Collection.Access.Random   ← O(1) guarantee
+/// ```
 ///
 /// ## Tags
 ///
