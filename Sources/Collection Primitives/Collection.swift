@@ -13,13 +13,48 @@
 ///
 /// ## Tags
 ///
-/// | Tag | Description |
-/// |-----|-------------|
-/// | `Collection.ForEach` | Tag for `.forEach` property extensions |
+/// | Tag | Operations |
+/// |-----|------------|
+/// | `Collection.ForEach` | `.forEach { }`, `.forEach.borrowing { }`, `.forEach.consuming { }` |
+/// | `Collection.Satisfies` | `.satisfies.all { }`, `.satisfies.any { }`, `.satisfies.none { }` |
+/// | `Collection.Contains` | `.contains { }` |
+/// | `Collection.First` | `.first { }` |
+/// | `Collection.Reduce` | `.reduce.into(_:) { }`, `.reduce.from(_:) { }` |
+/// | `Collection.Map` | `.map { }` |
+/// | `Collection.Filter` | `.filter { }` (requires `Element: Copyable`) |
+/// | `Collection.Count` | `.count.where { }`, `.count.all` |
 ///
 /// ## Types
 ///
 /// | Type | Description |
 /// |------|-------------|
 /// | `Collection.Rotated` | A rotated view of a collection |
+///
+/// ## Usage
+///
+/// 1. Conform your type to `Collection.Protocol`:
+///
+/// ```swift
+/// extension MyContainer: Collection.Protocol {
+///     typealias Index = Int
+///     var startIndex: Int { 0 }
+///     var endIndex: Int { storage.count }
+///     subscript(position: Int) -> Element { storage[position] }
+///     func index(after i: Int) -> Int { i + 1 }
+///     func makeIterator() -> Array<Element>.Iterator { storage.makeIterator() }
+/// }
+/// ```
+///
+/// 2. Add property accessors for desired operations:
+///
+/// ```swift
+/// extension MyContainer {
+///     var forEach: Property<Collection.ForEach, MyContainer>.View {
+///         mutating _read {
+///             yield unsafe Property<Collection.ForEach, MyContainer>.View(&self)
+///         }
+///     }
+///     // ... other operations as needed
+/// }
+/// ```
 public struct Collection: Sendable {}
