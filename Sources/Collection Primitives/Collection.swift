@@ -12,6 +12,7 @@
 /// | `Collection.Bidirectional` | Backward traversal via `index(before:)` |
 /// | `Collection.Access.Random` | O(1) index arithmetic guarantee |
 /// | `Collection.Clearable` | Collection that can be cleared for consuming iteration |
+/// | `Collection.Remove.Last` | Collection supporting `removeLast()` |
 ///
 /// ### Protocol Hierarchy
 ///
@@ -37,6 +38,7 @@
 /// | `Collection.Map` | `.map { }` |
 /// | `Collection.Filter` | `.filter { }` (requires `Element: Copyable`) |
 /// | `Collection.Count` | `.count.where { }`, `.count.all` |
+/// | `Collection.Remove` | `.remove.last()`, `.remove.all()` |
 ///
 /// ## Types
 ///
