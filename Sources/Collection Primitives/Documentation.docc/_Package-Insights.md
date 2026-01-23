@@ -2,7 +2,7 @@
 
 <!--
 ---
-title: Collection Primitives Insights
+title: Swift.Collection Primitives Insights
 version: 1.0.0
 last_updated: 2026-01-22
 applies_to: [swift-collection-primitives]

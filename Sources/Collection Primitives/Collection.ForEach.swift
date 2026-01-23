@@ -10,7 +10,7 @@ extension Collection {
     /// 2. Add a `forEach` property returning `Property<Collection.ForEach, Self>.View`
     ///
     /// ```swift
-    /// extension MyContainer: Collection.Protocol {
+    /// extension MyContainer: Swift.Collection.Protocol {
     ///     // ... protocol requirements ...
     /// }
     ///

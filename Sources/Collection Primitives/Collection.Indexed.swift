@@ -63,7 +63,7 @@ extension Collection {
     /// ```swift
     /// extension TokenContainer: Property.ForEach {
     ///     var forEach: Property.View<Self, Collection.ForEach> {
-    ///         Property.view(of: &self, as: Collection.ForEach.self)
+    ///         Property.view(of: &self, as: Swift.Collection.ForEach.self)
     ///     }
     /// }
     ///

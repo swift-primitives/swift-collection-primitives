@@ -1,5 +1,4 @@
 public import Property_Primitives
-public import Sequence_Primitives
 
 /// Property.View extensions for filter operations on `Collection.Protocol` conformers.
 ///

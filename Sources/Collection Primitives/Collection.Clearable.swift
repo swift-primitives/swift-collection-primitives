@@ -12,7 +12,7 @@ extension Collection {
     /// Conform to `Collection.Protocol` and implement `removeAll()`:
     ///
     /// ```swift
-    /// extension MyContainer: Collection.Clearable {
+    /// extension MyContainer: Swift.Collection.Clearable {
     ///     // Collection.Protocol requirements...
     ///
     ///     mutating func removeAll() {
