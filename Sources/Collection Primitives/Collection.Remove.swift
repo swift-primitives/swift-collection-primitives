@@ -64,7 +64,7 @@ extension Collection.Remove.View {
     @_lifetime(&self)
     @inlinable
     public mutating func last() -> Base.Element? {
-        unsafe base.pointee.removeLast()
+        unsafe _base.pointee.removeLast()
     }
 }
 
@@ -81,6 +81,6 @@ extension Collection.Remove.View where Base: Collection.Clearable {
     @_lifetime(&self)
     @inlinable
     public mutating func all() {
-        unsafe base.pointee.removeAll()
+        unsafe _base.pointee.removeAll()
     }
 }

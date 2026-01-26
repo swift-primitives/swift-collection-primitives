@@ -23,6 +23,7 @@ let package = Package(
         .package(path: "../swift-ordering-primitives"),
         .package(path: "../swift-property-primitives"),
         .package(path: "../swift-sequence-primitives"),
+        .package(path: "../swift-range-primitives"),
     ],
     targets: [
         .target(
@@ -33,6 +34,7 @@ let package = Package(
                 .product(name: "Ordering Primitives", package: "swift-ordering-primitives"),
                 .product(name: "Property Primitives", package: "swift-property-primitives"),
                 .product(name: "Sequence Primitives", package: "swift-sequence-primitives"),
+                .product(name: "Range Primitives", package: "swift-range-primitives"),
             ]
         ),
         .testTarget(
