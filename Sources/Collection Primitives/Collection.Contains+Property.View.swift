@@ -1,6 +1,5 @@
 public import Property_Primitives
 public import Sequence_Primitives
-public import Collection_Primitives
 
 /// Property.View extensions for containment checks on `Collection.Protocol` conformers.
 extension Property.View
