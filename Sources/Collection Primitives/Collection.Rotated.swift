@@ -45,47 +45,55 @@ where Base.Element: Sendable {
     /// - Parameters:
     ///   - base: The collection to rotate.
     ///   - startOffset: The number of positions to rotate. The offset is
-    ///     normalized modulo the collection count.
+    ///     normalized modulo the collection count. Negative offsets rotate
+    ///     in the opposite direction.
     @inlinable
-    public init(base: Base, startOffset: Int) {
+    public init(base: Base, startOffset: Index.Offset) {
         self.base = base
         let count = base.count
-        self.normalizedOffset = base.isEmpty ? Index.Offset(0) : Index.Offset(startOffset % count)
-        self._count = Index.Count(__unchecked: count)
+        self._count = Index.Count(__unchecked: (), count)
+
+        if base.isEmpty {
+            self.normalizedOffset = .zero
+        } else {
+            // Normalize offset to [0, count) handling negative values
+            let offsetValue = startOffset.vector.rawValue
+            let normalizedValue = ((offsetValue % count) + count) % count
+            self.normalizedOffset = Index.Offset(normalizedValue)
+        }
     }
 
     @inlinable
     public var startIndex: Index { .zero }
 
     @inlinable
-    public var endIndex: Index {
-        Index(__unchecked: (), position: _count.rawValue)
-    }
+    public var endIndex: Index { Index(_count) }
 
     @inlinable
     public subscript(position: Index) -> Base.Element {
-        let actualIndex = (normalizedOffset.rawValue + position.position.rawValue) % _count.rawValue
-        return base[base.index(base.startIndex, offsetBy: actualIndex)]
+        // Affine arithmetic: point + vector → point, then modular wrap
+        let physicalIndex = (try! position + normalizedOffset) % _count
+        return base[base.index(base.startIndex, offsetBy: Int(physicalIndex.position.rawValue))]
     }
 
     @inlinable
     public func index(after i: Index) -> Index {
-        (i + Index.Offset(1))!
+        try! i + .one
     }
 
     @inlinable
     public func index(before i: Index) -> Index {
-        (i - Index.Offset(1))!
+        try! i - .one
     }
 
     @inlinable
     public func index(_ i: Index, offsetBy distance: Int) -> Index {
-        (i + Index.Offset(distance))!
+        try! i + Index.Offset(distance)
     }
 
     @inlinable
     public func distance(from start: Index, to end: Index) -> Int {
-        (end - start).rawValue
+        (try! (end - start)).vector.rawValue
     }
 }
 

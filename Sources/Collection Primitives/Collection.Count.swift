@@ -84,7 +84,7 @@ extension Collection.Count.View {
         while let element = iterator.next() {
             if predicate(element) { count += 1 }
         }
-        return Index<Base.Element>.Count(__unchecked: count)
+        return Index<Base.Element>.Count(__unchecked: (), count)
     }
 
     /// Count all elements: `.count.all`
@@ -100,6 +100,6 @@ extension Collection.Count.View {
         var count = 0
         var iterator = unsafe base.pointee.makeIterator()
         while iterator.next() != nil { count += 1 }
-        return Index<Base.Element>.Count(__unchecked: count)
+        return Index<Base.Element>.Count(__unchecked: (), count)
     }
 }
