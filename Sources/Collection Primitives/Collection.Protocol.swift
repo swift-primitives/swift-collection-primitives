@@ -1,4 +1,5 @@
 public import Sequence_Primitives
+public import Index_Primitives
 
 extension Collection {
     /// Protocol for indexed, multi-pass sequences, supporting `~Copyable`.
@@ -19,7 +20,7 @@ extension Collection {
     ///     var endIndex: Index { Index(__unchecked: (), position: storage.count) }
     ///
     ///     subscript(position: Index) -> Element {
-    ///         storage[position.position.rawValue]
+    ///         storage[position.position]
     ///     }
     ///
     ///     func index(after i: Index) -> Index {
@@ -42,9 +43,8 @@ extension Collection {
     /// container.forEach { print($0) }  // 1, 2, 3 (again)
     /// ```
     public protocol `Protocol`: Sequence_Primitives.Sequence.`Protocol` & ~Copyable {
-        /// A type that represents a position in the collection.
-        associatedtype Index: Comparable
 
+        typealias Index = Index_Primitives.Index<Element>
         /// The position of the first element in a non-empty collection.
         var startIndex: Index { get }
 

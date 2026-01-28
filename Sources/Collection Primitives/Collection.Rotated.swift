@@ -73,7 +73,7 @@ where Base.Element: Sendable {
     public subscript(position: Index) -> Base.Element {
         // Affine arithmetic: point + vector → point, then modular wrap
         let physicalIndex = (try! position + normalizedOffset) % _count
-        return base[base.index(base.startIndex, offsetBy: Int(physicalIndex.position.rawValue))]
+        return base[base.index(base.startIndex, offsetBy: Int(physicalIndex.position))]
     }
 
     @inlinable

@@ -50,7 +50,7 @@ extension Collection {
     ///
     ///     // Element access as direct member (not protocol requirement)
     ///     subscript(position: Index) -> Token {
-    ///         _read { yield storage[position.position.rawValue] }
+    ///         _read { yield storage[position.position] }
     ///     }
     /// }
     /// ```
