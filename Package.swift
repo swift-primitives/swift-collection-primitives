@@ -37,10 +37,20 @@ let package = Package(
                 .product(name: "Range Primitives", package: "swift-range-primitives"),
             ]
         ),
+        .target(
+            name: "Collection Primitives Test Support",
+            dependencies: [
+                "Collection Primitives",
+                .product(name: "Index Primitives Test Support", package: "swift-index-primitives"),
+            ],
+            path: "Tests/Support"
+        ),
         .testTarget(
             name: "Collection Primitives Tests",
-            dependencies: ["Collection Primitives"],
-            path: "Tests/Sources/Collection Primitives Tests"
+            dependencies: [
+                "Collection Primitives",
+                "Collection Primitives Test Support"
+            ]
         )
     ],
     swiftLanguageModes: [.v6]

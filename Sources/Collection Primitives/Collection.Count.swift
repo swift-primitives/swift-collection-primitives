@@ -79,10 +79,10 @@ extension Collection.Count.View {
     /// - Returns: The count of matching elements.
     @inlinable
     public func `where`(_ predicate: (Base.Element) -> Bool) -> Index<Base.Element>.Count {
-        var count = 0
+        var count = Cardinal.zero
         var iterator = unsafe base.pointee.makeIterator()
         while let element = iterator.next() {
-            if predicate(element) { count += 1 }
+            if predicate(element) { count += .one }
         }
         return Index<Base.Element>.Count(__unchecked: (), count)
     }
@@ -97,9 +97,9 @@ extension Collection.Count.View {
     /// ```
     @inlinable
     public var all: Index<Base.Element>.Count {
-        var count = 0
+        var count = Cardinal.zero
         var iterator = unsafe base.pointee.makeIterator()
-        while iterator.next() != nil { count += 1 }
+        while iterator.next() != nil { count += .one }
         return Index<Base.Element>.Count(__unchecked: (), count)
     }
 }

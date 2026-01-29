@@ -51,7 +51,7 @@ where Base.Element: Sendable {
     public init(base: Base, startOffset: Index.Offset) {
         self.base = base
         let count = base.count
-        self._count = Index.Count(__unchecked: (), count)
+        self._count = Index.Count(__unchecked: (), Cardinal(UInt(count)))
 
         if base.isEmpty {
             self.normalizedOffset = .zero
@@ -73,7 +73,7 @@ where Base.Element: Sendable {
     public subscript(position: Index) -> Base.Element {
         // Affine arithmetic: point + vector → point, then modular wrap
         let physicalIndex = (try! position + normalizedOffset) % _count
-        return base[base.index(base.startIndex, offsetBy: Int(physicalIndex.position))]
+        return base[base.index(base.startIndex, offsetBy: Int(bitPattern: physicalIndex.position))]
     }
 
     @inlinable
