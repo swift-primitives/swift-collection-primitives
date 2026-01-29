@@ -62,38 +62,49 @@ where Base.Element: Sendable {
             self.normalizedOffset = Index.Offset(normalizedValue)
         }
     }
+}
 
+extension Collection.Rotated {
+    
     @inlinable
     public var startIndex: Index { .zero }
 
     @inlinable
     public var endIndex: Index { Index(_count) }
-
-    @inlinable
-    public subscript(position: Index) -> Base.Element {
-        // Affine arithmetic: point + vector → point, then modular wrap
-        let physicalIndex = (try! position + normalizedOffset) % _count
-        return base[base.index(base.startIndex, offsetBy: Int(bitPattern: physicalIndex.position))]
-    }
-
+    
     @inlinable
     public func index(after i: Index) -> Index {
-        try! i + .one
+        i + .one
     }
 
     @inlinable
     public func index(before i: Index) -> Index {
-        try! i - .one
+        do {
+            return try i - .one
+        } catch {
+            return .zero
+        }
     }
 
     @inlinable
     public func index(_ i: Index, offsetBy distance: Int) -> Index {
-        try! i + Index.Offset(distance)
+        do {
+            return try i + Index.Offset(distance)
+        } catch {
+            return self.endIndex
+        }
     }
 
     @inlinable
     public func distance(from start: Index, to end: Index) -> Int {
         (try! (end - start)).vector.rawValue
+    }
+    
+    @inlinable
+    public subscript(position: Index) -> Base.Element {
+        // Affine arithmetic: point + vector → point, then modular wrap
+        let physicalIndex = (try! position + normalizedOffset) % _count
+        return base[base.index(base.startIndex, offsetBy: Int(bitPattern: physicalIndex.position))]
     }
 }
 
