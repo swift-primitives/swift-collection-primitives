@@ -101,7 +101,7 @@ struct CollectionRotatedTests {
     @Test("endIndex equals count")
     func endIndexEqualsCount() {
         let rotated = Collection.Rotated(base: [1, 2, 3], startOffset: .one)
-        let expected = Index<Int>(Index<Int>.Count(__unchecked: (), Cardinal(3)))
+        let expected: Index<Int> = 3
 
         #expect(rotated.endIndex == expected)
     }

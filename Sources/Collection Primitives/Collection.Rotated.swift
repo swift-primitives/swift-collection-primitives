@@ -70,7 +70,7 @@ extension Collection.Rotated {
     public var startIndex: Index { .zero }
 
     @inlinable
-    public var endIndex: Index { Index(_count) }
+    public var endIndex: Index { Index(__unchecked: (), Ordinal(_count.rawValue)) }
     
     @inlinable
     public func index(after i: Index) -> Index {
@@ -80,7 +80,7 @@ extension Collection.Rotated {
     @inlinable
     public func index(before i: Index) -> Index {
         do {
-            return try i - .one
+            return try i - Index.Offset.one
         } catch {
             return .zero
         }
