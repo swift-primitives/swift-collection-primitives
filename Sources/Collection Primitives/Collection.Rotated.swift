@@ -74,13 +74,13 @@ extension Collection.Rotated {
     
     @inlinable
     public func index(after i: Index) -> Index {
-        i + .one
+        i.successor.saturating()
     }
 
     @inlinable
     public func index(before i: Index) -> Index {
         do {
-            return try i - .one
+            return try i.predecessor.exact()
         } catch {
             return .zero
         }
