@@ -18,7 +18,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Contains {
     /// - Parameter predicate: A closure that takes an element and returns a Bool.
     /// - Returns: `true` if any element satisfies the predicate.
     @inlinable
-    public func callAsFunction(_ predicate: (Base.Element) -> Bool) -> Bool {
+    public func callAsFunction(_ predicate: (borrowing Base.Element) -> Bool) -> Bool {
         var iterator = unsafe base.pointee.makeIterator()
         while let element = iterator.next() {
             if predicate(element) { return true }

@@ -78,7 +78,7 @@ extension Collection.Count.View {
     /// - Parameter predicate: A closure that returns `true` for elements to count.
     /// - Returns: The count of matching elements.
     @inlinable
-    public func `where`(_ predicate: (Base.Element) -> Bool) -> Index<Base.Element>.Count {
+    public func `where`(_ predicate: (borrowing Base.Element) -> Bool) -> Index<Base.Element>.Count {
         var count = Cardinal.zero
         var iterator = unsafe base.pointee.makeIterator()
         while let element = iterator.next() {

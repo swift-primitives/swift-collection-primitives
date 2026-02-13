@@ -18,7 +18,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Satisfies {
     /// - Parameter predicate: A closure that takes an element and returns a Bool.
     /// - Returns: `true` if all elements satisfy the predicate.
     @inlinable
-    public func all(_ predicate: (Base.Element) -> Bool) -> Bool {
+    public func all(_ predicate: (borrowing Base.Element) -> Bool) -> Bool {
         var iterator = unsafe base.pointee.makeIterator()
         while let element = iterator.next() {
             if !predicate(element) { return false }
@@ -38,7 +38,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Satisfies {
     /// - Parameter predicate: A closure that takes an element and returns a Bool.
     /// - Returns: `true` if any element satisfies the predicate.
     @inlinable
-    public func any(_ predicate: (Base.Element) -> Bool) -> Bool {
+    public func any(_ predicate: (borrowing Base.Element) -> Bool) -> Bool {
         var iterator = unsafe base.pointee.makeIterator()
         while let element = iterator.next() {
             if predicate(element) { return true }
@@ -59,7 +59,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Satisfies {
     /// - Parameter predicate: A closure that takes an element and returns a Bool.
     /// - Returns: `true` if no elements satisfy the predicate.
     @inlinable
-    public func none(_ predicate: (Base.Element) -> Bool) -> Bool {
+    public func none(_ predicate: (borrowing Base.Element) -> Bool) -> Bool {
         !any(predicate)
     }
 }

@@ -20,7 +20,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
     ///
     /// - Parameter body: A closure called with each element.
     @inlinable
-    public func callAsFunction(_ body: (Base.Element) -> Void) {
+    public func callAsFunction(_ body: (borrowing Base.Element) -> Void) {
         var index = unsafe base.pointee.startIndex
         let endIndex = unsafe base.pointee.endIndex
         while index < endIndex {
@@ -42,7 +42,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
     ///
     /// - Parameter body: A closure called with each element.
     @inlinable
-    public func borrowing(_ body: (Base.Element) -> Void) {
+    public func borrowing(_ body: (borrowing Base.Element) -> Void) {
         var index = unsafe base.pointee.startIndex
         let endIndex = unsafe base.pointee.endIndex
         while index < endIndex {
@@ -70,7 +70,7 @@ where Base: Collection.Clearable & ~Copyable, Tag == Collection.ForEach {
     /// - Parameter body: A closure called with each element.
     @_lifetime(&self)
     @inlinable
-    public mutating func consuming(_ body: (Base.Element) -> Void) {
+    public mutating func consuming(_ body: (borrowing Base.Element) -> Void) {
         var index = unsafe base.pointee.startIndex
         let endIndex = unsafe base.pointee.endIndex
         while index < endIndex {

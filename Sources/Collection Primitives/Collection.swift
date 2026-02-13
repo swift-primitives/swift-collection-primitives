@@ -12,6 +12,7 @@
 /// | `Collection.Bidirectional` | Backward traversal via `index(before:)` |
 /// | `Collection.Access.Random` | O(1) index arithmetic guarantee |
 /// | `Collection.Clearable` | Collection that can be cleared for consuming iteration |
+/// | `Collection.Slice.Protocol` | Self-slicing via `subscript(Range<Index>) -> Self` |
 /// | `Collection.Remove.Last` | Collection supporting `removeLast()` |
 ///
 /// ### Protocol Hierarchy
@@ -19,11 +20,11 @@
 /// ```
 /// Sequence.Protocol
 ///       ↑
-/// Collection.Protocol        ← index(after:)
+/// Collection.Protocol             ← index(after:)
+///       ↑                 ↑
+/// Collection.Bidirectional  Collection.Slice.Protocol  ← subscript(Range) -> Self
 ///       ↑
-/// Collection.Bidirectional   ← index(before:)
-///       ↑
-/// Collection.Access.Random   ← O(1) guarantee
+/// Collection.Access.Random        ← O(1) guarantee
 /// ```
 ///
 /// ## Tags
@@ -39,6 +40,7 @@
 /// | `Collection.Filter` | `.filter { }` (requires `Element: Copyable`) |
 /// | `Collection.Count` | `.count.where { }`, `.count.all` |
 /// | `Collection.Remove` | `.remove.last()`, `.remove.all()` |
+/// | `Collection.Slice` | `.slice` (future: prefix, suffix, split) |
 ///
 /// ## Types
 ///
