@@ -66,6 +66,16 @@ This pattern—separating index navigation from element access—has general app
 
 ---
 
+## Broken Experiment: collection-foreach-test
+
+**Date**: 2026-02-13
+
+**Context**: The `collection-foreach-test` experiment in `Experiments/` is broken. It uses `typealias Index = Int` and `Array<Element>.Iterator` which doesn't conform to `Sequence.Iterator.Protocol`. Needs update to match current patterns (typed indices, `Sequence.Protocol`-compatible iterators).
+
+**Applies to**: `Experiments/collection-foreach-test/`
+
+---
+
 ## Topics
 
 ### Related Documents
