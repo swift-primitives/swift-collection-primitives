@@ -7,9 +7,9 @@ extension Collection {
     ///
     /// ```swift
     /// extension MyContainer: Collection.Remove.Last {
-    ///     mutating func removeLast() -> Element? {
-    ///         guard !isEmpty else { return nil }
-    ///         return storage.removeLast()
+    ///     static func removeLast(_ base: inout Self) -> Element? {
+    ///         guard !base.isEmpty else { return nil }
+    ///         return base._storage.remove.last()
     ///     }
     /// }
     /// ```
@@ -18,7 +18,9 @@ extension Collection {
     ///
     /// ```swift
     /// extension MyContainer: Collection.Clearable {
-    ///     mutating func removeAll() { storage.removeAll() }
+    ///     static func removeAll(_ base: inout Self) {
+    ///         base._storage.remove.all()
+    ///     }
     /// }
     /// ```
     ///
@@ -51,7 +53,7 @@ extension Collection.Remove {
 
 // MARK: - .remove.last()
 
-extension Collection.Remove.View {
+extension Collection.Remove.View where Base: ~Copyable {
     /// Removes and returns the last element: `.remove.last()`
     ///
     /// ```swift
@@ -64,13 +66,13 @@ extension Collection.Remove.View {
     @_lifetime(&self)
     @inlinable
     public mutating func last() -> Base.Element? {
-        unsafe _base.pointee.removeLast()
+        unsafe Base.removeLast(&_base.pointee)
     }
 }
 
 // MARK: - .remove.all()
 
-extension Collection.Remove.View where Base: Collection.Clearable {
+extension Collection.Remove.View where Base: Collection.Clearable & ~Copyable {
     /// Removes all elements: `.remove.all()`
     ///
     /// ```swift
@@ -81,6 +83,6 @@ extension Collection.Remove.View where Base: Collection.Clearable {
     @_lifetime(&self)
     @inlinable
     public mutating func all() {
-        unsafe _base.pointee.removeAll()
+        unsafe Base.removeAll(&_base.pointee)
     }
 }

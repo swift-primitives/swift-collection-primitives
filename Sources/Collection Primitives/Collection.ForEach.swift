@@ -2,8 +2,9 @@ extension Collection {
     /// Tag type for `.forEach` property extensions on collections.
     ///
     /// `Collection.ForEach` provides index-based iteration that enables true
-    /// borrowing semantics via subscript `_read`. This shadows the inherited
-    /// `Sequence.ForEach` default, which uses iterator-based iteration.
+    /// borrowing semantics via subscript `_read`. This is the collection
+    /// iteration mechanism — collections iterate by index traversal, not
+    /// by `makeIterator()` / `next()`.
     ///
     /// The `.forEach` accessor is provided automatically via protocol default
     /// on `Collection.Protocol`. Conformers do not need to add it manually.
@@ -16,13 +17,11 @@ extension Collection {
     /// | `.forEach.borrowing { }` | Explicit borrowing iteration |
     /// | `.forEach.consuming { }` | Consuming iteration (requires `Clearable`) |
     ///
-    /// ## Collection.ForEach vs Sequence.ForEach
+    /// ## Why Index-Based
     ///
-    /// `Collection.ForEach` uses index-based traversal for true borrowing
-    /// semantics through subscript `_read`. `Sequence.ForEach` uses
-    /// `makeIterator()` which copies elements through `next()`.
-    ///
-    /// The `Collection.Protocol` default shadows the inherited `Sequence.Protocol`
-    /// default, so collection conformers always get the index-based implementation.
+    /// Index-based traversal (`startIndex`, `index(after:)`, `subscript`)
+    /// enables true borrowing semantics through subscript `_read`.
+    /// Iterator-based traversal (`next() -> Element?`) returns owned values,
+    /// which requires `Element: Copyable` or consuming moves.
     public enum ForEach {}
 }

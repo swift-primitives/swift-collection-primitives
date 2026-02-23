@@ -1,22 +1,17 @@
-public import Sequence_Primitives
-
 extension Collection {
     /// Protocol for collections that can be cleared, supporting `~Copyable`.
     ///
-    /// `Collection.Clearable` combines `Collection.Protocol` with
-    /// `Sequence.Clearable`, enabling consuming iteration via
-    /// `.forEach.consuming { }`.
+    /// Conformers implement the static `removeAll(_:)` primitive.
+    /// The fluent API `.remove.all()` is provided automatically.
     ///
     /// ## Conforming to Collection.Clearable
     ///
-    /// Conform to `Collection.Protocol` and implement `removeAll()`:
+    /// Implement the static `removeAll(_:)` primitive:
     ///
     /// ```swift
-    /// extension MyContainer: Swift.Collection.Clearable {
-    ///     // Collection.Protocol requirements...
-    ///
-    ///     mutating func removeAll() {
-    ///         storage.removeAll()
+    /// extension MyContainer: Collection.Clearable {
+    ///     static func removeAll(_ base: inout Self) {
+    ///         base._storage.remove.all()
     ///     }
     /// }
     /// ```
@@ -33,5 +28,10 @@ extension Collection {
     /// }
     /// // container is now empty
     /// ```
-    public protocol Clearable: Collection.`Protocol` & Sequence_Primitives.Sequence.Clearable & ~Copyable {}
+    public protocol Clearable: Collection.`Protocol` & ~Copyable {
+        /// Removes all elements.
+        ///
+        /// Static implementation primitive. Use `.remove.all()` at call sites.
+        static func removeAll(_ base: inout Self)
+    }
 }

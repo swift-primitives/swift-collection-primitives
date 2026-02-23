@@ -77,6 +77,6 @@ where Base: Collection.Clearable & ~Copyable, Tag == Collection.ForEach {
             body(unsafe base.pointee[index])
             index = unsafe base.pointee.index(after: index)
         }
-        unsafe base.pointee.removeAll()
+        unsafe Base.removeAll(&base.pointee)
     }
 }

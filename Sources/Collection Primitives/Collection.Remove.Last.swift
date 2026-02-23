@@ -27,19 +27,19 @@ extension Collection.Remove.Last where Self: ~Copyable {
 extension Collection.Remove {
     /// Protocol for collections that support removing the last element.
     ///
-    /// `Collection.Remove.Last` provides the primitive `removeLast()` method.
-    /// Conformers automatically get the `.remove` property and `.remove.last()`
-    /// fluent API via protocol extension.
+    /// Conformers implement the static `removeLast(_:)` primitive.
+    /// The fluent API `.remove.last()` is provided automatically
+    /// via protocol extension.
     ///
     /// ## Conforming to Collection.Remove.Last
     ///
-    /// Implement the `removeLast()` primitive:
+    /// Implement the static `removeLast(_:)` primitive:
     ///
     /// ```swift
     /// extension MyContainer: Collection.Remove.Last {
-    ///     mutating func removeLast() -> Element? {
-    ///         guard !storage.isEmpty else { return nil }
-    ///         return storage.removeLast()
+    ///     static func removeLast(_ base: inout Self) -> Element? {
+    ///         guard !base.isEmpty else { return nil }
+    ///         return base._storage.remove.last()
     ///     }
     /// }
     /// ```
@@ -55,28 +55,10 @@ extension Collection.Remove {
     /// container.remove.last()  // Optional(1)
     /// container.remove.last()  // nil
     /// ```
-    ///
-    /// ## Combining with Clearable
-    ///
-    /// For `.remove.all()`, also conform to `Collection.Clearable`:
-    ///
-    /// ```swift
-    /// extension MyContainer: Collection.Remove.Last, Collection.Clearable {
-    ///     mutating func removeLast() -> Element? { ... }
-    ///     mutating func removeAll() { storage.removeAll() }
-    /// }
-    ///
-    /// // Now both are available:
-    /// container.remove.last()  // Remove one
-    /// container.remove.all()   // Remove all
-    /// ```
     public protocol Last: Collection.`Protocol` & ~Copyable {
         /// Removes and returns the last element, or `nil` if empty.
         ///
-        /// This is the primitive operation. The fluent API `.remove.last()`
-        /// is provided automatically via protocol extension.
-        ///
-        /// - Returns: The removed element, or `nil` if the collection is empty.
-        mutating func removeLast() -> Element?
+        /// Static implementation primitive. Use `.remove.last()` at call sites.
+        static func removeLast(_ base: inout Self) -> Element?
     }
 }

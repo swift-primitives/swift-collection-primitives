@@ -1,12 +1,11 @@
-public import Sequence_Primitives
 public import Index_Primitives
 
 extension Collection {
-    /// Protocol for indexed, multi-pass sequences, supporting `~Copyable`.
+    /// Protocol for indexed, multi-pass collections, supporting `~Copyable`.
     ///
-    /// `Collection.Protocol` extends `Sequence.Protocol` with index-based
-    /// element access. Unlike stdlib's `Collection`, this protocol supports
-    /// `~Copyable` conformers.
+    /// `Collection.Protocol` provides index-based element access for multi-pass
+    /// iteration. Unlike stdlib's `Collection`, this protocol supports
+    /// `~Copyable` conformers and `~Copyable` elements.
     ///
     /// ## Conforming to Collection.Protocol
     ///
@@ -14,8 +13,6 @@ extension Collection {
     ///
     /// ```swift
     /// extension MyContainer: Collection.`Protocol` {
-    ///     typealias Index = Index_Primitives.Index<Element>
-    ///
     ///     var startIndex: Index { .zero }
     ///     var endIndex: Index { Index(__unchecked: (), position: storage.count) }
     ///
@@ -25,10 +22,6 @@ extension Collection {
     ///
     ///     func index(after i: Index) -> Index {
     ///         (i + Index.Offset(1))!
-    ///     }
-    ///
-    ///     func makeIterator() -> Array<Element>.Iterator {
-    ///         storage.makeIterator()
     ///     }
     /// }
     /// ```
@@ -42,7 +35,15 @@ extension Collection {
     /// container.forEach { print($0) }  // 1, 2, 3
     /// container.forEach { print($0) }  // 1, 2, 3 (again)
     /// ```
-    public protocol `Protocol`: Sequence_Primitives.Sequence.`Protocol` & ~Copyable {
+    ///
+    /// ## Relationship to Sequence.Protocol
+    ///
+    /// `Collection.Protocol` does not inherit from `Sequence.Protocol`.
+    /// Collections iterate via index traversal (`startIndex`, `index(after:)`),
+    /// not via `makeIterator()` / `next()`. Types wanting `Swift.Collection`
+    /// or `for-in` syntax should also conform to `Sequence.Protocol` separately.
+    public protocol `Protocol`: ~Copyable {
+        associatedtype Element: ~Copyable
 
         typealias Index = Index_Primitives.Index<Element>
         /// The position of the first element in a non-empty collection.

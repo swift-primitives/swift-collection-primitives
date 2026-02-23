@@ -80,9 +80,11 @@ extension Collection.Count.View {
     @inlinable
     public func `where`(_ predicate: (borrowing Base.Element) -> Bool) -> Index<Base.Element>.Count {
         var count = Cardinal.zero
-        var iterator = unsafe base.pointee.makeIterator()
-        while let element = iterator.next() {
-            if predicate(element) { count += .one }
+        var index = unsafe base.pointee.startIndex
+        let endIndex = unsafe base.pointee.endIndex
+        while index < endIndex {
+            if predicate(unsafe base.pointee[index]) { count += .one }
+            index = unsafe base.pointee.index(after: index)
         }
         return Index<Base.Element>.Count(__unchecked: (), count)
     }
@@ -98,8 +100,12 @@ extension Collection.Count.View {
     @inlinable
     public var all: Index<Base.Element>.Count {
         var count = Cardinal.zero
-        var iterator = unsafe base.pointee.makeIterator()
-        while iterator.next() != nil { count += .one }
+        var index = unsafe base.pointee.startIndex
+        let endIndex = unsafe base.pointee.endIndex
+        while index < endIndex {
+            count += .one
+            index = unsafe base.pointee.index(after: index)
+        }
         return Index<Base.Element>.Count(__unchecked: (), count)
     }
 }

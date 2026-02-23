@@ -1,13 +1,84 @@
 public import Property_Primitives
 public import Ordering_Primitives
 
-/// Property.View extensions for finding maximum element on `Collection.Protocol` conformers.
+// MARK: - Universal index-based max (works with ~Copyable elements)
+
+/// Property.View extensions for finding maximum element index on `Collection.Protocol` conformers.
 extension Property.View
 where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Max {
+
+    /// Find index of maximum element using comparator: `.max.index(by:)`
+    ///
+    /// Returns the index of the maximum element according to the comparator,
+    /// or `nil` if the collection is empty. Works with `~Copyable` elements.
+    ///
+    /// ```swift
+    /// var container = MyContainer([3, 1, 4, 1, 5])
+    /// if let idx = container.max.index(by: .ascending) {
+    ///     print(container[idx])  // 5
+    /// }
+    /// ```
+    ///
+    /// - Parameter comparator: The comparator defining the ordering.
+    /// - Returns: The index of the maximum element, or `nil` if empty.
+    @inlinable
+    public func index(by comparator: Ordering.Comparator<Base.Element>) -> Base.Index? {
+        var index = unsafe base.pointee.startIndex
+        let endIndex = unsafe base.pointee.endIndex
+        guard index < endIndex else { return nil }
+        var bestIndex = index
+        index = unsafe base.pointee.index(after: index)
+        while index < endIndex {
+            if comparator(unsafe base.pointee[index], unsafe base.pointee[bestIndex]) == .greater {
+                bestIndex = index
+            }
+            index = unsafe base.pointee.index(after: index)
+        }
+        return bestIndex
+    }
+}
+
+/// Convenience `max.index()` for `Comparison.Protocol` elements.
+extension Property.View
+where Base: Collection.`Protocol` & ~Copyable,
+      Base.Element: Comparison.`Protocol`,
+      Tag == Collection.Max {
+
+    /// Find index of maximum element using natural ordering: `.max.index()`
+    ///
+    /// - Returns: The index of the maximum element, or `nil` if empty.
+    @inlinable
+    public func index() -> Base.Index? {
+        index(by: .ascending)
+    }
+}
+
+/// Convenience `max.index()` for `Swift.Comparable` elements.
+extension Property.View
+where Base: Collection.`Protocol` & ~Copyable,
+      Base.Element: Swift.Comparable,
+      Tag == Collection.Max {
+
+    /// Find index of maximum element using natural ordering: `.max.index()`
+    ///
+    /// - Returns: The index of the maximum element, or `nil` if empty.
+    @_disfavoredOverload
+    @inlinable
+    public func index() -> Base.Index? {
+        index(by: .ascending)
+    }
+}
+
+// MARK: - Copyable element max value (returns Element via index + subscript)
+
+/// Property.View extensions for finding maximum element on collections with Copyable elements.
+extension Property.View
+where Base: Collection.`Protocol` & ~Copyable, Base.Element: Copyable, Tag == Collection.Max {
 
     /// Find maximum element using comparator: `.max(by:)`
     ///
     /// Returns the maximum element according to the comparator, or `nil` if empty.
+    /// Requires `Element: Copyable` to return the element by value.
     ///
     /// ```swift
     /// var container = MyContainer([3, 1, 4, 1, 5])
@@ -19,21 +90,15 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Max {
     /// - Returns: The maximum element, or `nil` if the collection is empty.
     @inlinable
     public func callAsFunction(by comparator: Ordering.Comparator<Base.Element>) -> Base.Element? {
-        var iterator = unsafe base.pointee.makeIterator()
-        guard var result = iterator.next() else { return nil }
-        while let element = iterator.next() {
-            if comparator(element, result) == .greater {
-                result = element
-            }
-        }
-        return result
+        guard let idx = index(by: comparator) else { return nil }
+        return unsafe base.pointee[idx]
     }
 }
 
 /// Property.View extensions for finding maximum element on collections with Comparison.Protocol elements.
 extension Property.View
 where Base: Collection.`Protocol` & ~Copyable,
-      Base.Element: Comparison.`Protocol`,
+      Base.Element: Copyable & Comparison.`Protocol`,
       Tag == Collection.Max {
 
     /// Find maximum element using natural ordering: `.max()`
@@ -55,7 +120,7 @@ where Base: Collection.`Protocol` & ~Copyable,
 /// Property.View extensions for finding maximum element on collections with Swift.Comparable elements.
 extension Property.View
 where Base: Collection.`Protocol` & ~Copyable,
-      Base.Element: Swift.Comparable,
+      Base.Element: Copyable & Swift.Comparable,
       Tag == Collection.Max {
 
     /// Find maximum element using natural ordering: `.max()`

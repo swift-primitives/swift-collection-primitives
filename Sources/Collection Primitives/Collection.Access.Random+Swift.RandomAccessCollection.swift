@@ -1,44 +1,27 @@
 /// Bridge to `Swift.RandomAccessCollection` for `Copyable` conformers.
 ///
-/// Types conforming to `Collection.Access.Random` that are `Copyable` can also
-/// conform to `Swift.RandomAccessCollection` with no additional implementation:
+/// Types conforming to `Collection.Access.Random`, `Collection.Protocol`,
+/// and `Sequence.Protocol` that are `Copyable` can conform to
+/// `Swift.RandomAccessCollection`:
 ///
 /// ```swift
-/// struct MyContainer: Collection.Access.Random, Swift.RandomAccessCollection {
-///     // Collection.Access.Random requirements satisfy Swift.RandomAccessCollection
+/// struct MyContainer: Collection.Access.Random, Collection.`Protocol`,
+///                     Sequence.`Protocol`, Swift.RandomAccessCollection {
+///     // Requirements from all protocols satisfy Swift.RandomAccessCollection
 /// }
 /// ```
 ///
-/// ## Why This Works
+/// ## Why All Three Protocols Are Needed
 ///
-/// Both `Collection.Access.Random` and `Swift.RandomAccessCollection` are
-/// semantic protocols that add no new requirements beyond their parent
-/// (`Collection.Bidirectional` and `Swift.BidirectionalCollection` respectively).
-/// They declare the O(1) index arithmetic guarantee.
+/// `Swift.RandomAccessCollection` requires:
+/// - O(1) index arithmetic (from `Collection.Access.Random`)
+/// - Element access via `subscript` (from `Collection.Protocol`)
+/// - `makeIterator()` (from `Sequence.Protocol`)
 ///
-/// ## Usage
-///
-/// ```swift
-/// // 1. Define your type with Collection.Access.Random
-/// struct Numbers: Collection.Access.Random {
-///     let values: [Int]
-///
-///     var startIndex: Int { values.startIndex }
-///     var endIndex: Int { values.endIndex }
-///     subscript(position: Int) -> Int { values[position] }
-///     func index(after i: Int) -> Int { i + 1 }
-///     func index(before i: Int) -> Int { i - 1 }
-///     func makeIterator() -> Array<Int>.Iterator { values.makeIterator() }
-/// }
-///
-/// // 2. Add Swift.RandomAccessCollection conformance
-/// extension Numbers: Swift.RandomAccessCollection {}
-///
-/// // 3. Gets O(1) count, efficient slicing, and all stdlib algorithms
-/// let count = numbers.count  // O(1)
-/// let middle = numbers[numbers.count / 2]  // O(1) access
-/// ```
+/// These are independent hierarchies in swift-primitives, so types must
+/// conform to all three explicitly to bridge to `Swift.RandomAccessCollection`.
 extension Collection.Access.Random where Self: Copyable {
-    // All requirements satisfied by Collection.Access.Random.
-    // This extension enables documentation and future default implementations.
+    // All index-navigation requirements satisfied by Collection.Access.Random.
+    // Types also need Collection.Protocol (subscript) and Sequence.Protocol (makeIterator)
+    // to bridge to Swift.RandomAccessCollection.
 }

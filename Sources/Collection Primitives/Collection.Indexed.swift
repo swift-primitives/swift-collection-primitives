@@ -3,6 +3,14 @@ public import Comparison_Primitives
 extension Collection {
     /// Protocol for index-based navigation, supporting `~Copyable` types.
     ///
+    /// > Legacy note: With `Collection.Protocol` now standalone (no `Sequence.Protocol`
+    /// > inheritance), `Collection.Protocol` itself provides index-based access
+    /// > without `makeIterator()`. However, `Collection.Indexed` cannot be folded
+    /// > into `Collection.Protocol` because Protocol's `subscript -> Element { get }`
+    /// > triggers implicit `Element: Copyable` through protocol inheritance chains.
+    /// > `Collection.Indexed` remains as the ~Copyable-safe root for the
+    /// > `Bidirectional` → `Access.Random` hierarchy.
+    ///
     /// `Collection.Indexed` provides index navigation without requiring
     /// `makeIterator()`. This enables index-based iteration over containers
     /// with `~Copyable` elements.
@@ -10,25 +18,23 @@ extension Collection {
     /// ## Design Note: Element Access
     ///
     /// This protocol intentionally does **not** include `associatedtype Element`
-    /// or `subscript(position:) -> Element`. Swift does not currently support
-    /// `associatedtype Element: ~Copyable` (deferred from SE-0427), so protocols
-    /// with `associatedtype Element` implicitly require `Element: Copyable`.
+    /// or `subscript(position:) -> Element`. Including `subscript -> Element { get }`
+    /// in a protocol triggers implicit `Element: Copyable` when conformers use
+    /// `where Element: ~Copyable` constraints. By omitting element access,
+    /// `Collection.Indexed` remains safe for the ~Copyable hierarchy.
     ///
     /// **Conformers provide subscript as a direct member**, not a protocol
     /// requirement. This enables full `~Copyable` element support while
     /// maintaining protocol-based index navigation.
     ///
-    /// See: SE-0427 "Noncopyable Generics" Future Directions.
-    ///
-    /// ## Difference from Collection.Protocol
+    /// ## Relationship to Collection.Protocol
     ///
     /// | Aspect | `Collection.Protocol` | `Collection.Indexed` |
     /// |--------|----------------------|---------------------|
-    /// | Inherits from | `Sequence.Protocol` | Nothing |
-    /// | Requires `makeIterator()` | Yes | No |
-    /// | Element in protocol | Yes (implicit Copyable) | No (conformer provides) |
-    /// | Index constraint | `Comparable` | `Comparison.Protocol` |
-    /// | Use case | Copyable elements | Any elements |
+    /// | Has `Element` | Yes (`~Copyable`) | No |
+    /// | Has `subscript` | Yes | No |
+    /// | Supports ~Copyable inheritance | Blocked by `{ get }` | Yes |
+    /// | Use case | Standalone collection API | Bidirectional hierarchy root |
     ///
     /// ## Conforming to Collection.Indexed
     ///
@@ -52,24 +58,6 @@ extension Collection {
     ///     subscript(position: Index) -> Token {
     ///         _read { yield storage[position.position] }
     ///     }
-    /// }
-    /// ```
-    ///
-    /// ## ForEach Integration
-    ///
-    /// Types conforming to `Collection.Indexed` can add a `.forEach` property
-    /// to get borrowing iteration via `Property.View` extensions:
-    ///
-    /// ```swift
-    /// extension TokenContainer: Property.ForEach {
-    ///     var forEach: Property.View<Self, Collection.ForEach> {
-    ///         Property.view(of: &self, as: Swift.Collection.ForEach.self)
-    ///     }
-    /// }
-    ///
-    /// var container = TokenContainer(...)
-    /// container.forEach { token in
-    ///     print(token.id)  // borrowing access, not consuming
     /// }
     /// ```
     ///

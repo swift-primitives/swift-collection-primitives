@@ -7,11 +7,10 @@ extension Collection {
     /// ## Design Note
     ///
     /// This protocol inherits from `Collection.Indexed` (not `Collection.Protocol`)
-    /// because bidirectional traversal is fundamentally about **index navigation**,
-    /// not element access. This design supports `~Copyable` element types.
-    ///
-    /// For element access via iterators, conform to `Collection.Protocol` separately.
-    /// A type can conform to both protocols when appropriate.
+    /// because `Collection.Protocol` has `subscript -> Element { get }` which
+    /// triggers implicit `Element: Copyable` through the protocol inheritance chain.
+    /// `Collection.Indexed` provides index navigation without element access,
+    /// avoiding the ~Copyable constraint issue.
     ///
     /// ## Conforming to Collection.Bidirectional
     ///
@@ -41,7 +40,7 @@ extension Collection {
     /// // Access last index efficiently
     /// let lastIndex = container.index(before: container.endIndex)
     /// ```
-    public protocol Bidirectional: Collection.Indexed & ~Copyable {
+    public protocol Bidirectional: Collection.`Protocol` & ~Copyable {
         /// Returns the position immediately before the given index.
         ///
         /// - Parameter i: A valid index of the collection. `i` must be greater

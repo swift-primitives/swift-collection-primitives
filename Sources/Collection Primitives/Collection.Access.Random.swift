@@ -28,13 +28,13 @@ extension Collection {
         /// ## Protocol Hierarchy
         ///
         /// ```
-        /// Sequence.Protocol
+        /// Collection.Indexed              ← startIndex, endIndex, index(after:)
         ///       ↑
-        /// Collection.Protocol        ← index(after:)
+        /// Collection.Bidirectional        ← index(before:)
         ///       ↑
-        /// Collection.Bidirectional   ← index(before:)
-        ///       ↑
-        /// Collection.Access.Random   ← O(1) guarantee
+        /// Collection.Access.Random        ← O(1) guarantee
+        ///
+        /// Collection.Protocol             ← Element, subscript (separate hierarchy)
         /// ```
         public protocol Random: Collection.Bidirectional & ~Copyable {}
     }

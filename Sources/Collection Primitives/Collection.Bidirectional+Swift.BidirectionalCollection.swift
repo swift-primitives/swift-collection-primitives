@@ -1,43 +1,27 @@
 /// Bridge to `Swift.BidirectionalCollection` for `Copyable` conformers.
 ///
-/// Types conforming to `Collection.Bidirectional` that are `Copyable` can also
-/// conform to `Swift.BidirectionalCollection` with no additional implementation:
+/// Types conforming to `Collection.Bidirectional`, `Collection.Protocol`,
+/// and `Sequence.Protocol` that are `Copyable` can conform to
+/// `Swift.BidirectionalCollection`:
 ///
 /// ```swift
-/// struct MyContainer: Collection.Bidirectional, Swift.BidirectionalCollection {
-///     // Collection.Bidirectional requirements satisfy Swift.BidirectionalCollection
+/// struct MyContainer: Collection.Bidirectional, Collection.`Protocol`,
+///                     Sequence.`Protocol`, Swift.BidirectionalCollection {
+///     // Requirements from all protocols satisfy Swift.BidirectionalCollection
 /// }
 /// ```
 ///
-/// ## Why This Works
+/// ## Why All Three Protocols Are Needed
 ///
-/// `Collection.Bidirectional` requires `index(before:)` in addition to
-/// `Collection.Protocol` requirements. This is exactly what
-/// `Swift.BidirectionalCollection` adds to `Swift.Collection`.
+/// `Swift.BidirectionalCollection` requires:
+/// - Index navigation with `index(before:)` (from `Collection.Bidirectional`)
+/// - Element access via `subscript` (from `Collection.Protocol`)
+/// - `makeIterator()` (from `Sequence.Protocol`)
 ///
-/// ## Usage
-///
-/// ```swift
-/// // 1. Define your type with Collection.Bidirectional
-/// struct Numbers: Collection.Bidirectional {
-///     let values: [Int]
-///
-///     var startIndex: Int { values.startIndex }
-///     var endIndex: Int { values.endIndex }
-///     subscript(position: Int) -> Int { values[position] }
-///     func index(after i: Int) -> Int { i + 1 }
-///     func index(before i: Int) -> Int { i - 1 }
-///     func makeIterator() -> Array<Int>.Iterator { values.makeIterator() }
-/// }
-///
-/// // 2. Add Swift.BidirectionalCollection conformance
-/// extension Numbers: Swift.BidirectionalCollection {}
-///
-/// // 3. Now works with reversed(), last, suffix(), etc.
-/// let reversed = numbers.reversed()
-/// let last = numbers.last
-/// ```
+/// These are independent hierarchies in swift-primitives, so types must
+/// conform to all three explicitly to bridge to `Swift.BidirectionalCollection`.
 extension Collection.Bidirectional where Self: Copyable {
-    // All requirements satisfied by Collection.Bidirectional.
-    // This extension enables documentation and future default implementations.
+    // All index-navigation requirements satisfied by Collection.Bidirectional.
+    // Types also need Collection.Protocol (subscript) and Sequence.Protocol (makeIterator)
+    // to bridge to Swift.BidirectionalCollection.
 }
