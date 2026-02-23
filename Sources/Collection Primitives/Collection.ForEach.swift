@@ -1,36 +1,14 @@
 extension Collection {
     /// Tag type for `.forEach` property extensions on collections.
     ///
-    /// Use this tag with `Property.View` to add `.forEach` functionality
-    /// to types conforming to `Collection.Protocol`.
+    /// `Collection.ForEach` provides index-based iteration that enables true
+    /// borrowing semantics via subscript `_read`. This shadows the inherited
+    /// `Sequence.ForEach` default, which uses iterator-based iteration.
     ///
-    /// ## Adding forEach to Your Type
-    ///
-    /// 1. Conform to `Collection.Protocol`
-    /// 2. Add a `forEach` property returning `Property<Collection.ForEach, Self>.View`
-    ///
-    /// ```swift
-    /// extension MyContainer: Swift.Collection.Protocol {
-    ///     // ... protocol requirements ...
-    /// }
-    ///
-    /// extension MyContainer {
-    ///     var forEach: Property<Collection.ForEach, MyContainer>.View {
-    ///         mutating _read {
-    ///             yield unsafe Property<Collection.ForEach, MyContainer>.View(&self)
-    ///         }
-    ///         mutating _modify {
-    ///             var view = unsafe Property<Collection.ForEach, MyContainer>.View(&self)
-    ///             yield &view
-    ///         }
-    ///     }
-    /// }
-    /// ```
+    /// The `.forEach` accessor is provided automatically via protocol default
+    /// on `Collection.Protocol`. Conformers do not need to add it manually.
     ///
     /// ## Available Operations
-    ///
-    /// Once you add the `forEach` property, these operations are available
-    /// via `Property.View` extensions:
     ///
     /// | Operation | Description |
     /// |-----------|-------------|
@@ -40,8 +18,11 @@ extension Collection {
     ///
     /// ## Collection.ForEach vs Sequence.ForEach
     ///
-    /// Use `Collection.ForEach` when your type conforms to `Collection.Protocol`.
-    /// Use `Sequence.ForEach` when your type only conforms to `Sequence.Protocol`.
-    /// Both provide the same iteration methods.
+    /// `Collection.ForEach` uses index-based traversal for true borrowing
+    /// semantics through subscript `_read`. `Sequence.ForEach` uses
+    /// `makeIterator()` which copies elements through `next()`.
+    ///
+    /// The `Collection.Protocol` default shadows the inherited `Sequence.Protocol`
+    /// default, so collection conformers always get the index-based implementation.
     public enum ForEach {}
 }

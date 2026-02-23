@@ -19,7 +19,7 @@ extension Collection {
     ///     var startIndex: Index { .zero }
     ///     var endIndex: Index { Index(__unchecked: (), position: storage.count) }
     ///
-    ///     subscript(position: Index) -> Element {
+    ///     subscript(_ position: Index) -> Element {
     ///         storage[position.position]
     ///     }
     ///
@@ -55,7 +55,7 @@ extension Collection {
         ///
         /// - Parameter position: The position of the element to access.
         /// - Returns: The element at the specified position.
-        subscript(position: Index) -> Element { get }
+        subscript(_ position: Index) -> Element { get }
 
         /// Returns the position immediately after the given index.
         ///

@@ -27,18 +27,34 @@
 /// Collection.Access.Random        ← O(1) guarantee
 /// ```
 ///
-/// ## Tags
+/// ## Inherited from Sequence.Protocol
+///
+/// These operations are inherited from `Sequence.Protocol` defaults and available
+/// on all `Collection.Protocol` conformers automatically:
 ///
 /// | Tag | Operations |
 /// |-----|------------|
-/// | `Collection.ForEach` | `.forEach { }`, `.forEach.borrowing { }`, `.forEach.consuming { }` |
-/// | `Collection.Satisfies` | `.satisfies.all { }`, `.satisfies.any { }`, `.satisfies.none { }` |
-/// | `Collection.Contains` | `.contains { }` |
-/// | `Collection.First` | `.first { }` |
-/// | `Collection.Reduce` | `.reduce.into(_:) { }`, `.reduce.from(_:) { }` |
-/// | `Collection.Map` | `.map { }` |
-/// | `Collection.Filter` | `.filter { }` (requires `Element: Copyable`) |
-/// | `Collection.Count` | `.count.where { }`, `.count.all` |
+/// | `Sequence.Contains` | `.contains { }` |
+/// | `Sequence.First` | `.first { }` |
+/// | `Sequence.Reduce` | `.reduce.into(_:) { }`, `.reduce.from(_:) { }` |
+/// | `Sequence.Map` | `.map { }` |
+/// | `Sequence.Filter` | `.filter { }` (requires `Element: Copyable`) |
+/// | `Sequence.Satisfies` | `.satisfies.all { }`, `.satisfies.any { }`, `.satisfies.none { }` |
+/// | `Sequence.Count` | `.count.where { }`, `.count.all` |
+/// | `Sequence.Drop` | `.drop.first(_:)`, `.drop.while { }` |
+/// | `Sequence.Prefix` | `.prefix.first(_:)`, `.prefix.while { }` |
+///
+/// ## Collection-Specific Tags
+///
+/// These operations shadow or extend Sequence defaults with collection-optimized
+/// implementations:
+///
+/// | Tag | Operations |
+/// |-----|------------|
+/// | `Collection.ForEach` | `.forEach { }`, `.forEach.borrowing { }`, `.forEach.consuming { }` (index-based) |
+/// | `Collection.Count` | `.count.where { }`, `.count.all` (returns `Index<Element>.Count`) |
+/// | `Collection.Min` | `.min()`, `.min(by:)` |
+/// | `Collection.Max` | `.max()`, `.max(by:)` |
 /// | `Collection.Remove` | `.remove.last()`, `.remove.all()` |
 /// | `Collection.Slice` | `.slice` (future: prefix, suffix, split) |
 ///
@@ -50,29 +66,23 @@
 ///
 /// ## Usage
 ///
-/// 1. Conform your type to `Collection.Protocol`:
+/// Conform your type to `Collection.Protocol`. All inherited Sequence operations
+/// and collection-specific `.forEach` and `.count` are available automatically:
 ///
 /// ```swift
 /// extension MyContainer: Collection.Protocol {
-///     typealias Index = Int
-///     var startIndex: Int { 0 }
-///     var endIndex: Int { storage.count }
-///     subscript(position: Int) -> Element { storage[position] }
-///     func index(after i: Int) -> Int { i + 1 }
+///     typealias Index = Index_Primitives.Index<Element>
+///     var startIndex: Index { .zero }
+///     var endIndex: Index { Index(__unchecked: (), position: storage.count) }
+///     subscript(position: Index) -> Element { storage[position.position] }
+///     func index(after i: Index) -> Index { (i + Index.Offset(1))! }
 ///     func makeIterator() -> Array<Element>.Iterator { storage.makeIterator() }
 /// }
-/// ```
 ///
-/// 2. Add property accessors for desired operations:
-///
-/// ```swift
-/// extension MyContainer {
-///     var forEach: Property<Collection.ForEach, MyContainer>.View {
-///         mutating _read {
-///             yield unsafe Property<Collection.ForEach, MyContainer>.View(&self)
-///         }
-///     }
-///     // ... other operations as needed
-/// }
+/// // All of these work immediately:
+/// container.forEach { }       // index-based (Collection.ForEach)
+/// container.contains { }      // inherited (Sequence.Contains)
+/// container.map { }           // inherited (Sequence.Map)
+/// container.count.all         // collection-specific (Collection.Count)
 /// ```
 public struct Collection: Sendable {}
