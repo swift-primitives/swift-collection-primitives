@@ -9,11 +9,6 @@ applies_to: [swift-collection-primitives]
 normative: false
 ---
 -->
-
-@Metadata {
-    @TitleHeading("Collection Primitives")
-}
-
 Design decisions, implementation patterns, and lessons learned specific to this package.
 
 ## Overview
@@ -76,8 +71,6 @@ This pattern—separating index navigation from element access—has general app
 
 ---
 
-## Topics
+## Related
 
-### Related Documents
-
-- <doc:Collection>
+- Collection
