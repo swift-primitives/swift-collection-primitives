@@ -27,8 +27,7 @@ public import Index_Primitives
 /// - Note: This type is hoisted to module level with `__` prefix because Swift
 ///   doesn't allow types nested in protocols. The canonical name is
 ///   `Collection.Rotated` (via typealias).
-public struct __CollectionRotated<Base: RandomAccessCollection & Sendable>: RandomAccessCollection, Sendable
-where Base.Element: Sendable {
+public struct __CollectionRotated<Base: RandomAccessCollection>: RandomAccessCollection {
     public typealias Index = Index_Primitives.Index<Base.Element>
 
     @usableFromInline
@@ -108,12 +107,15 @@ extension Collection.Rotated {
     }
 }
 
+// MARK: - Sendable
+
+extension Collection.Rotated: Sendable where Base: Sendable {}
+
 // MARK: - Collection.Rotated typealias
 
 extension Collection {
     /// A rotated view of a collection.
     ///
     /// Typealias for ``__CollectionRotated``. See that type for full documentation.
-    public typealias Rotated<Base: RandomAccessCollection & Sendable> = __CollectionRotated<Base>
-        where Base.Element: Sendable
+    public typealias Rotated<Base: RandomAccessCollection> = __CollectionRotated<Base>
 }
