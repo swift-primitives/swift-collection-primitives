@@ -50,6 +50,29 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
             index = unsafe base.pointee.index(after: index)
         }
     }
+
+    /// Index-based iteration: `.forEach.index { }`
+    ///
+    /// Yields each valid index from `startIndex` to `endIndex`.
+    /// Use when the index is needed (e.g., for mutation or cross-reference).
+    ///
+    /// ```swift
+    /// var container = MyContainer([1, 2, 3])
+    /// container.forEach.index { idx in
+    ///     container.withElement(at: idx) { print($0) }
+    /// }
+    /// ```
+    ///
+    /// - Parameter body: A closure called with each index.
+    @inlinable
+    public func index(_ body: (Base.Index) -> Void) {
+        var index = unsafe base.pointee.startIndex
+        let endIndex = unsafe base.pointee.endIndex
+        while index < endIndex {
+            body(index)
+            index = unsafe base.pointee.index(after: index)
+        }
+    }
 }
 
 /// Property.View extensions for consuming iteration on `Collection.Clearable` conformers.
