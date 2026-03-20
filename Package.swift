@@ -15,6 +15,10 @@ let package = Package(
         .library(
             name: "Collection Primitives",
             targets: ["Collection Primitives"]
+        ),
+        .library(
+            name: "Collection Primitives Test Support",
+            targets: ["Collection Primitives Test Support"]
         )
     ],
     dependencies: [
