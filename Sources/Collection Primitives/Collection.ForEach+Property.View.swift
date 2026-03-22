@@ -91,7 +91,6 @@ where Base: Collection.Clearable & ~Copyable, Tag == Collection.ForEach {
     /// ```
     ///
     /// - Parameter body: A closure called with each element.
-    @_lifetime(&self)
     @inlinable
     public mutating func consuming(_ body: (borrowing Base.Element) -> Void) {
         var index = unsafe base.pointee.startIndex
