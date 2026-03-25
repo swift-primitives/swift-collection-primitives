@@ -63,7 +63,6 @@ extension Collection.Remove.View where Base: ~Copyable {
     /// ```
     ///
     /// - Returns: The removed element, or `nil` if the collection is empty.
-    @_lifetime(&self)
     @inlinable
     public mutating func last() -> Base.Element? {
         unsafe Base.removeLast(&_base.pointee)
@@ -80,7 +79,6 @@ extension Collection.Remove.View where Base: Collection.Clearable & ~Copyable {
     /// container.remove.all()
     /// container.count  // 0
     /// ```
-    @_lifetime(&self)
     @inlinable
     public mutating func all() {
         unsafe Base.removeAll(&_base.pointee)
