@@ -1,0 +1,9 @@
+{
+  "$schema": "https://swift-institute.org/schemas/research-index-v1.json",
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-04-18",
+  "title": "Research Index",
+  "blurb": "See also: `swift-primitives/Research/collection-sequence-protocol-detachment.md` — primitives-wide research on removing Sequence.Protocol inheritance from Collection.Protocol (RECOMMENDATION, 2026-02-23).",
+  "scope": "swift-collection-primitives (swift-primitives)",
+  "documents": []
+}
