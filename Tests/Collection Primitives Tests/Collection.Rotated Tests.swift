@@ -10,40 +10,40 @@ struct CollectionRotatedTests {
 
     // MARK: - Basic Rotation
 
-    @Test("rotation by 0 returns original order")
-    func rotationByZero() {
+    @Test
+    func `rotation by 0 returns original order`() {
         let original = ["a", "b", "c", "d"]
         let rotated = Collection.Rotated(base: original, startOffset: .zero)
 
         #expect(Array(rotated) == ["a", "b", "c", "d"])
     }
 
-    @Test("rotation by 1 shifts elements left")
-    func rotationByOne() {
+    @Test
+    func `rotation by 1 shifts elements left`() {
         let original = ["a", "b", "c", "d"]
         let rotated = Collection.Rotated(base: original, startOffset: .one)
 
         #expect(Array(rotated) == ["b", "c", "d", "a"])
     }
 
-    @Test("rotation by 2 shifts elements left by 2")
-    func rotationByTwo() {
+    @Test
+    func `rotation by 2 shifts elements left by 2`() {
         let original = ["a", "b", "c", "d"]
         let rotated = Collection.Rotated(base: original, startOffset: 2)
 
         #expect(Array(rotated) == ["c", "d", "a", "b"])
     }
 
-    @Test("rotation by count returns original order")
-    func rotationByCount() {
+    @Test
+    func `rotation by count returns original order`() {
         let original = ["a", "b", "c", "d"]
         let rotated = Collection.Rotated(base: original, startOffset: 4)
 
         #expect(Array(rotated) == ["a", "b", "c", "d"])
     }
 
-    @Test("rotation normalizes offset modulo count")
-    func rotationNormalizesOffset() {
+    @Test
+    func `rotation normalizes offset modulo count`() {
         let original = ["a", "b", "c", "d"]
         let rotated = Collection.Rotated(base: original, startOffset: 5)
 
@@ -51,8 +51,8 @@ struct CollectionRotatedTests {
         #expect(Array(rotated) == ["b", "c", "d", "a"])
     }
 
-    @Test("large offset is normalized")
-    func largeOffsetNormalized() {
+    @Test
+    func `large offset is normalized`() {
         let original = [1, 2, 3]
         let rotated = Collection.Rotated(base: original, startOffset: 100)
 
@@ -62,8 +62,8 @@ struct CollectionRotatedTests {
 
     // MARK: - Empty Collection
 
-    @Test("empty collection rotation")
-    func emptyCollectionRotation() {
+    @Test
+    func `empty collection rotation`() {
         let empty: [Int] = []
         let rotated = Collection.Rotated(base: empty, startOffset: 5)
 
@@ -73,8 +73,8 @@ struct CollectionRotatedTests {
 
     // MARK: - Single Element
 
-    @Test("single element rotation")
-    func singleElementRotation() {
+    @Test
+    func `single element rotation`() {
         let single = [42]
         let rotated = Collection.Rotated(base: single, startOffset: .one)
 
@@ -83,23 +83,23 @@ struct CollectionRotatedTests {
 
     // MARK: - Collection Properties
 
-    @Test("count matches base count")
-    func countMatchesBase() {
+    @Test
+    func `count matches base count`() {
         let original = [1, 2, 3, 4, 5]
         let rotated = Collection.Rotated(base: original, startOffset: 2)
 
         #expect(rotated.count == original.count)
     }
 
-    @Test("startIndex is zero")
-    func startIndexIsZero() {
+    @Test
+    func `startIndex is zero`() {
         let rotated = Collection.Rotated(base: [1, 2, 3], startOffset: .one)
 
         #expect(rotated.startIndex == .zero)
     }
 
-    @Test("endIndex equals count")
-    func endIndexEqualsCount() {
+    @Test
+    func `endIndex equals count`() {
         let rotated = Collection.Rotated(base: [1, 2, 3], startOffset: .one)
         let expected: Index<Int> = 3
 
@@ -108,8 +108,8 @@ struct CollectionRotatedTests {
 
     // MARK: - RandomAccessCollection
 
-    @Test("subscript access at various positions")
-    func subscriptAccess() {
+    @Test
+    func `subscript access at various positions`() {
         let original = ["a", "b", "c", "d", "e"]
         let rotated = Collection.Rotated(base: original, startOffset: 2)
 
@@ -123,8 +123,8 @@ struct CollectionRotatedTests {
         #expect(rotated[idx0 + 4] == "b")
     }
 
-    @Test("index arithmetic")
-    func indexArithmetic() {
+    @Test
+    func `index arithmetic`() {
         let rotated = Collection.Rotated(base: [1, 2, 3, 4, 5], startOffset: .one)
 
         let idx0: Index<Int> = .zero
@@ -139,8 +139,8 @@ struct CollectionRotatedTests {
         #expect(rotated.distance(from: idx1, to: idx4) == 3)
     }
 
-    @Test("reversed iteration")
-    func reversedIteration() {
+    @Test
+    func `reversed iteration`() {
         let original = [1, 2, 3, 4]
         let rotated = Collection.Rotated(base: original, startOffset: .one)
 
@@ -150,8 +150,8 @@ struct CollectionRotatedTests {
 
     // MARK: - Composition
 
-    @Test("nested rotation")
-    func nestedRotation() {
+    @Test
+    func `nested rotation`() {
         let original = [1, 2, 3, 4]
         let rotated1 = Collection.Rotated(base: original, startOffset: .one)
         let rotated2 = Collection.Rotated(base: rotated1, startOffset: .one)
@@ -163,8 +163,8 @@ struct CollectionRotatedTests {
 
     // MARK: - Different Base Types
 
-    @Test("works with ArraySlice")
-    func worksWithArraySlice() {
+    @Test
+    func `works with ArraySlice`() {
         let array = [0, 1, 2, 3, 4, 5]
         let slice = array[1..<5]  // [1, 2, 3, 4]
         let rotated = Collection.Rotated(base: slice, startOffset: .one)
