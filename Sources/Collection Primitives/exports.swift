@@ -3,5 +3,5 @@
 
 @_exported import Comparison_Primitives
 @_exported import Index_Primitives
-@_exported import Ordering_Primitives
+@_exported import Order_Primitives
 @_exported import Sequence_Primitives

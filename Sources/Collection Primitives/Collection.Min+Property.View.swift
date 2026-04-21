@@ -1,5 +1,5 @@
 public import Property_Primitives
-public import Ordering_Primitives
+public import Order_Primitives
 
 // MARK: - Universal index-based min (works with ~Copyable elements)
 
@@ -22,7 +22,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Min {
     /// - Parameter comparator: The comparator defining the ordering.
     /// - Returns: The index of the minimum element, or `nil` if empty.
     @inlinable
-    public func index(by comparator: Ordering.Comparator<Base.Element>) -> Base.Index? {
+    public func index(by comparator: Order.Comparator<Base.Element>) -> Base.Index? {
         var index = unsafe base.pointee.startIndex
         let endIndex = unsafe base.pointee.endIndex
         guard index < endIndex else { return nil }
@@ -89,7 +89,7 @@ where Base: Collection.`Protocol` & ~Copyable, Base.Element: Copyable, Tag == Co
     /// - Parameter comparator: The comparator defining the ordering.
     /// - Returns: The minimum element, or `nil` if the collection is empty.
     @inlinable
-    public func callAsFunction(by comparator: Ordering.Comparator<Base.Element>) -> Base.Element? {
+    public func callAsFunction(by comparator: Order.Comparator<Base.Element>) -> Base.Element? {
         guard let idx = index(by: comparator) else { return nil }
         return unsafe base.pointee[idx]
     }
