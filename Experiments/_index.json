@@ -65,6 +65,17 @@
       "statusRaw": "CONFIRMED",
       "supersededBy": null,
       "crossRefs": []
+    },
+    {
+      "directory": "collection-iteration-semantics",
+      "purpose": "Iterator vs subscript semantics for ~Copyable",
+      "date": "2026-01-22",
+      "toolchain": "Swift 6.2",
+      "status": "CONFIRMED",
+      "statusDetail": null,
+      "statusRaw": "CONFIRMED",
+      "supersededBy": null,
+      "crossRefs": []
     }
   ]
 }
