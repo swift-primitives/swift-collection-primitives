@@ -23,16 +23,16 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Max {
     /// - Returns: The index of the maximum element, or `nil` if empty.
     @inlinable
     public func index(by comparator: Order.Comparator<Base.Element>) -> Base.Index? {
-        var index = unsafe base.pointee.startIndex
-        let endIndex = unsafe base.pointee.endIndex
+        var index = unsafe base.value.startIndex
+        let endIndex = unsafe base.value.endIndex
         guard index < endIndex else { return nil }
         var bestIndex = index
-        index = unsafe base.pointee.index(after: index)
+        index = unsafe base.value.index(after: index)
         while index < endIndex {
-            if comparator(unsafe base.pointee[index], unsafe base.pointee[bestIndex]) == .greater {
+            if comparator(unsafe base.value[index], unsafe base.value[bestIndex]) == .greater {
                 bestIndex = index
             }
-            index = unsafe base.pointee.index(after: index)
+            index = unsafe base.value.index(after: index)
         }
         return bestIndex
     }
@@ -91,7 +91,7 @@ where Base: Collection.`Protocol` & ~Copyable, Base.Element: Copyable, Tag == Co
     @inlinable
     public func callAsFunction(by comparator: Order.Comparator<Base.Element>) -> Base.Element? {
         guard let idx = index(by: comparator) else { return nil }
-        return unsafe base.pointee[idx]
+        return unsafe base.value[idx]
     }
 }
 

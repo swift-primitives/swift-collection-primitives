@@ -21,11 +21,11 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
     /// - Parameter body: A closure called with each element.
     @inlinable
     public func callAsFunction(_ body: (borrowing Base.Element) -> Void) {
-        var index = unsafe base.pointee.startIndex
-        let endIndex = unsafe base.pointee.endIndex
+        var index = unsafe base.value.startIndex
+        let endIndex = unsafe base.value.endIndex
         while index < endIndex {
-            body(unsafe base.pointee[index])
-            index = unsafe base.pointee.index(after: index)
+            body(unsafe base.value[index])
+            index = unsafe base.value.index(after: index)
         }
     }
 
@@ -43,11 +43,11 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
     /// - Parameter body: A closure called with each element.
     @inlinable
     public func borrowing(_ body: (borrowing Base.Element) -> Void) {
-        var index = unsafe base.pointee.startIndex
-        let endIndex = unsafe base.pointee.endIndex
+        var index = unsafe base.value.startIndex
+        let endIndex = unsafe base.value.endIndex
         while index < endIndex {
-            body(unsafe base.pointee[index])
-            index = unsafe base.pointee.index(after: index)
+            body(unsafe base.value[index])
+            index = unsafe base.value.index(after: index)
         }
     }
 
@@ -66,11 +66,11 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
     /// - Parameter body: A closure called with each index.
     @inlinable
     public func index(_ body: (Base.Index) -> Void) {
-        var index = unsafe base.pointee.startIndex
-        let endIndex = unsafe base.pointee.endIndex
+        var index = unsafe base.value.startIndex
+        let endIndex = unsafe base.value.endIndex
         while index < endIndex {
             body(index)
-            index = unsafe base.pointee.index(after: index)
+            index = unsafe base.value.index(after: index)
         }
     }
 }
@@ -93,12 +93,12 @@ where Base: Collection.Clearable & ~Copyable, Tag == Collection.ForEach {
     /// - Parameter body: A closure called with each element.
     @inlinable
     public mutating func consuming(_ body: (borrowing Base.Element) -> Void) {
-        var index = unsafe base.pointee.startIndex
-        let endIndex = unsafe base.pointee.endIndex
+        var index = unsafe base.value.startIndex
+        let endIndex = unsafe base.value.endIndex
         while index < endIndex {
-            body(unsafe base.pointee[index])
-            index = unsafe base.pointee.index(after: index)
+            body(unsafe base.value[index])
+            index = unsafe base.value.index(after: index)
         }
-        unsafe Base.removeAll(&base.pointee)
+        unsafe Base.removeAll(&base.value)
     }
 }
