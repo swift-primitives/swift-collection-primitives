@@ -1,0 +1,104 @@
+public import Property_Primitives
+
+/// Property.Inout extensions for borrowing iteration on `Collection.Protocol` conformers.
+///
+/// Uses index-based iteration instead of `makeIterator()` to enable true borrowing
+/// semantics via subscript `_read`. This supports both Copyable and ~Copyable elements.
+extension Property.Inout
+where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
+
+    /// Borrowing iteration via `.forEach { }`.
+    ///
+    /// Iterates over all elements without consuming the collection.
+    /// Uses index-based access for true borrowing semantics.
+    ///
+    /// ```swift
+    /// var container = MyContainer([1, 2, 3])
+    /// container.forEach { print($0) }
+    /// // container still has 3 elements
+    /// ```
+    ///
+    /// - Parameter body: A closure called with each element.
+    @inlinable
+    public func callAsFunction(_ body: (borrowing Base.Element) -> Void) {
+        var index = base.value.startIndex
+        let endIndex = base.value.endIndex
+        while index < endIndex {
+            body(base.value[index])
+            index = base.value.index(after: index)
+        }
+    }
+
+    /// Explicit borrowing iteration via `.forEach.borrowing { }`.
+    ///
+    /// Same as `callAsFunction`, but with explicit naming for clarity.
+    /// Uses index-based access for true borrowing semantics.
+    ///
+    /// ```swift
+    /// var container = MyContainer([1, 2, 3])
+    /// container.forEach.borrowing { print($0) }
+    /// // container still has 3 elements
+    /// ```
+    ///
+    /// - Parameter body: A closure called with each element.
+    @inlinable
+    public func borrowing(_ body: (borrowing Base.Element) -> Void) {
+        var index = base.value.startIndex
+        let endIndex = base.value.endIndex
+        while index < endIndex {
+            body(base.value[index])
+            index = base.value.index(after: index)
+        }
+    }
+
+    /// Index-based iteration via `.forEach.index { }`.
+    ///
+    /// Yields each valid index from `startIndex` to `endIndex`.
+    /// Use when the index is needed (e.g., for mutation or cross-reference).
+    ///
+    /// ```swift
+    /// var container = MyContainer([1, 2, 3])
+    /// container.forEach.index { idx in
+    ///     container.withElement(at: idx) { print($0) }
+    /// }
+    /// ```
+    ///
+    /// - Parameter body: A closure called with each index.
+    @inlinable
+    public func index(_ body: (Base.Index) -> Void) {
+        var index = base.value.startIndex
+        let endIndex = base.value.endIndex
+        while index < endIndex {
+            body(index)
+            index = base.value.index(after: index)
+        }
+    }
+}
+
+/// Property.Inout extensions for consuming iteration on `Collection.Clearable` conformers.
+extension Property.Inout
+where Base: Collection.Clearable & ~Copyable, Tag == Collection.ForEach {
+
+    /// Consuming iteration via `.forEach.consuming { }`.
+    ///
+    /// Iterates over all elements and then clears the collection.
+    /// Uses index-based access for true borrowing during iteration.
+    ///
+    /// ```swift
+    /// var container = MyContainer([1, 2, 3])
+    /// container.forEach.consuming { print($0) }
+    /// // container is now empty
+    /// ```
+    ///
+    /// - Parameter body: A closure called with each element.
+    @inlinable
+    public mutating func consuming(_ body: (borrowing Base.Element) -> Void) {
+        var index = base.value.startIndex
+        let endIndex = base.value.endIndex
+        while index < endIndex {
+            body(base.value[index])
+            index = base.value.index(after: index)
+        }
+        unsafe Base.removeAll(&base.value)
+    }
+}

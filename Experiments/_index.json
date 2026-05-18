@@ -1,0 +1,81 @@
+{
+  "$schema": "https://swift-institute.org/schemas/experiments-index-v1.json",
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-04-30",
+  "title": "Experiments Index",
+  "blurb": "",
+  "scope": "swift-collection-primitives (swift-primitives)",
+  "experiments": [
+    {
+      "directory": "collection-foreach-test",
+      "displayName": "collection-foreach-test",
+      "purpose": "Verify Collection.Protocol and Property.View forEach extensions with ~Copyable",
+      "date": "2026-01-22",
+      "toolchain": "Swift 6.2.3",
+      "status": "SUPERSEDED",
+      "statusDetail": "API/package drift; experiment premise no longer expressible against current toolchain or peer-package API",
+      "statusRaw": "SUPERSEDED (Phase 7a 2026-04-30; previously CONFIRMED)",
+      "supersededBy": null,
+      "crossRefs": []
+    },
+    {
+      "directory": "collection-sequence-detachment",
+      "displayName": "collection-sequence-detachment",
+      "purpose": "Validate Collection.Protocol detached from Sequence.Protocol with ~Copyable elements",
+      "date": "2026-02-23",
+      "toolchain": "Swift 6.2",
+      "status": "CONFIRMED",
+      "statusDetail": null,
+      "statusRaw": "CONFIRMED",
+      "supersededBy": null,
+      "crossRefs": []
+    },
+    {
+      "directory": "protocol-inheritance-shadowing",
+      "displayName": "protocol-inheritance-shadowing",
+      "purpose": "Validate Collection.Protocol extension shadowing of Sequence.Protocol defaults",
+      "date": "2026-02-13",
+      "toolchain": "Swift 6.2",
+      "status": "SUPERSEDED",
+      "statusDetail": "Sequence.Protocol -> Collection.Protocol inheritance with .forEach shadowing shipped in collection-primitives (Phase 1b stale-triage 2026-04-30)",
+      "statusRaw": "CONFIRMED -> SUPERSEDED (Phase 1b stale-triage 2026-04-30)",
+      "supersededBy": "Sequence.Protocol -> Collection.Protocol inheritance with .forEach shadowing shipped in collection-primitives",
+      "crossRefs": []
+    },
+    {
+      "directory": "protocol-subscript-noncopyable",
+      "displayName": "protocol-subscript-noncopyable",
+      "purpose": "Cross-module protocol inheritance with ~Copyable subscript get",
+      "date": "2026-02-23",
+      "toolchain": "Swift 6.2",
+      "status": "CONFIRMED",
+      "statusDetail": null,
+      "statusRaw": "CONFIRMED",
+      "supersededBy": null,
+      "crossRefs": []
+    },
+    {
+      "directory": "self-slicing-noncopyable",
+      "displayName": "self-slicing-noncopyable",
+      "purpose": "Self-slicing subscript protocol supporting ~Copyable conformers",
+      "date": "2026-02-13",
+      "toolchain": "Swift 6.2",
+      "status": "CONFIRMED",
+      "statusDetail": null,
+      "statusRaw": "CONFIRMED",
+      "supersededBy": null,
+      "crossRefs": []
+    },
+    {
+      "directory": "collection-iteration-semantics",
+      "purpose": "Iterator vs subscript semantics for ~Copyable",
+      "date": "2026-01-22",
+      "toolchain": "Swift 6.2",
+      "status": "SUPERSEDED",
+      "statusDetail": "API/package drift; experiment premise no longer expressible against current toolchain or peer-package API",
+      "statusRaw": "SUPERSEDED (Phase 7a 2026-04-30; previously CONFIRMED)",
+      "supersededBy": null,
+      "crossRefs": []
+    }
+  ]
+}
