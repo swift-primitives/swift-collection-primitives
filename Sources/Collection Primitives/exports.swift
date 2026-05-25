@@ -1,7 +1,6 @@
 @_exported public import Collection_Access_Random_Primitives
 @_exported public import Collection_Bidirectional_Primitives
 @_exported public import Collection_Clearable_Primitives
-@_exported public import Collection_Count_Primitives
 @_exported public import Collection_ForEach_Primitives
 @_exported public import Collection_Indexed_Primitives
 @_exported public import Collection_Max_Primitives

@@ -26,10 +26,6 @@ let package = Package(
             targets: ["Collection Clearable Primitives"]
         ),
         .library(
-            name: "Collection Count Primitives",
-            targets: ["Collection Count Primitives"]
-        ),
-        .library(
             name: "Collection ForEach Primitives",
             targets: ["Collection ForEach Primitives"]
         ),
@@ -140,14 +136,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Count
-        .target(
-            name: "Collection Count Primitives",
-            dependencies: [
-                "Collection Protocol Primitives",
-            ]
-        ),
-
         // MARK: - ForEach
         .target(
             name: "Collection ForEach Primitives",
@@ -222,7 +210,6 @@ let package = Package(
                 "Collection Access Random Primitives",
                 "Collection Bidirectional Primitives",
                 "Collection Clearable Primitives",
-                "Collection Count Primitives",
                 "Collection ForEach Primitives",
                 "Collection Indexed Primitives",
                 "Collection Max Primitives",

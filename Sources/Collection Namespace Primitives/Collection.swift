@@ -38,7 +38,7 @@
 /// | Tag | Operations |
 /// |-----|------------|
 /// | `Collection.ForEach` | `.forEach { }`, `.forEach.borrowing { }`, `.forEach.consuming { }` (index-based) |
-/// | `Collection.Count` | `.count.where { }`, `.count.all` (returns `Index<Element>.Count`) |
+/// | `count` (direct) | `.count`, `.count(where:)` (return `Index<Element>.Count`; borrowing) |
 /// | `Collection.Min` | `.min()`, `.min(by:)`, `.min.index(by:)` |
 /// | `Collection.Max` | `.max()`, `.max(by:)`, `.max.index(by:)` |
 /// | `Collection.Remove` | `.remove.last()`, `.remove.all()` |
@@ -65,7 +65,7 @@
 ///
 /// // All of these work immediately:
 /// container.forEach { }       // index-based (Collection.ForEach)
-/// container.count.all         // collection-specific (Collection.Count)
+/// container.count             // total count (Index<Element>.Count)
 /// container.min(by: .ascending) // index-based (Collection.Min)
 /// ```
 public struct Collection: Sendable {}
