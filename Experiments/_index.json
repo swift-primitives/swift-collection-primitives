@@ -76,6 +76,18 @@
       "statusRaw": "SUPERSEDED (Phase 7a 2026-04-30; previously CONFIRMED)",
       "supersededBy": null,
       "crossRefs": []
+    },
+    {
+      "directory": "collection-index-escapable-lifetime",
+      "displayName": "collection-index-escapable-lifetime",
+      "purpose": "Does a ~Escapable-admitting Collection.Protocol Index associatedtype preserve the storable-index contract (formIndex)? Tests the lifetime-annotation design space (@_lifetime(copy i) vs borrow self) and the ~Copyable-index subscript wall.",
+      "date": "2026-05-25",
+      "toolchain": "Apple Swift 6.3.2",
+      "status": "CONFIRMED",
+      "statusDetail": "@_lifetime(copy i) CONFIRMED (formIndex typechecks; consumer compiles cross-module debug+release and runs); @_lifetime(borrow self) REFUTED ('i' escapes, depends on self); ~Copyable index REFUTED (subscripts cannot have noncopyable parameters yet). Overturns the prior /tmp-spike conclusion that ~Escapable was not viable for a Collection index.",
+      "statusRaw": "CONFIRMED (V2 copy-i) / REFUTED (V1 borrow-self, V4 ~Copyable)",
+      "supersededBy": null,
+      "crossRefs": []
     }
   ]
 }
