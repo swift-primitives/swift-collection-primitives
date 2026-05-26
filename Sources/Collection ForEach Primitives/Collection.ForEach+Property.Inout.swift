@@ -5,7 +5,7 @@ public import Property_Primitives
 /// Uses index-based iteration instead of `makeIterator()` to enable true borrowing
 /// semantics via subscript `_read`. This supports both Copyable and ~Copyable elements.
 extension Property.Inout
-where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
+where Base: Collection.`Protocol` & ~Copyable, Base.Index: Escapable, Tag == Collection.ForEach {
 
     /// Borrowing iteration via `.forEach { }`.
     ///
@@ -77,7 +77,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.ForEach {
 
 /// Property.Inout extensions for consuming iteration on `Collection.Clearable` conformers.
 extension Property.Inout
-where Base: Collection.Clearable & ~Copyable, Tag == Collection.ForEach {
+where Base: Collection.Clearable & ~Copyable, Base.Index: Escapable, Tag == Collection.ForEach {
 
     /// Consuming iteration via `.forEach.consuming { }`.
     ///

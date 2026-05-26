@@ -95,6 +95,7 @@ let package = Package(
             name: "Collection Protocol Primitives",
             dependencies: [
                 "Collection Namespace Primitives",
+                .product(name: "Comparison Primitives", package: "swift-comparison-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
             ]
         ),

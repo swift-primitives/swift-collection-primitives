@@ -3,9 +3,15 @@ public import Property_Primitives
 
 // MARK: - Universal index-based min (works with ~Copyable elements)
 
+// NOTE: The index-returning APIs require `Base.Index: Escapable` — they return a
+// *stored* index, which a `~Escapable` index cannot be. Conformers with the
+// default `Index<Element>` (Escapable) are unaffected; custom `~Escapable`-index
+// types simply don't get min-by-index. (Collection.`Protocol`.Index is a
+// `~Escapable`-admitting associatedtype since the index-suppression change.)
+
 /// Property.Inout extensions for finding minimum element index on `Collection.Protocol` conformers.
 extension Property.Inout
-where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Min {
+where Base: Collection.`Protocol` & ~Copyable, Base.Index: Escapable, Tag == Collection.Min {
 
     /// Find index of minimum element using comparator via `.min.index(by:)`.
     ///
@@ -42,6 +48,7 @@ where Base: Collection.`Protocol` & ~Copyable, Tag == Collection.Min {
 extension Property.Inout
 where
     Base: Collection.`Protocol` & ~Copyable,
+    Base.Index: Escapable,
     Base.Element: Comparison.`Protocol`,
     Tag == Collection.Min
 {
@@ -66,6 +73,7 @@ where
     extension Property.Inout
     where
         Base: Collection.`Protocol` & ~Copyable,
+        Base.Index: Escapable,
         Base.Element: Swift.Comparable,
         Tag == Collection.Min
     {
@@ -85,7 +93,7 @@ where
 
 /// Property.Inout extensions for finding minimum element on collections with Copyable elements.
 extension Property.Inout
-where Base: Collection.`Protocol` & ~Copyable, Base.Element: Copyable, Tag == Collection.Min {
+where Base: Collection.`Protocol` & ~Copyable, Base.Index: Escapable, Base.Element: Copyable, Tag == Collection.Min {
 
     /// Find minimum element using comparator via `.min(by:)`.
     ///
@@ -111,6 +119,7 @@ where Base: Collection.`Protocol` & ~Copyable, Base.Element: Copyable, Tag == Co
 extension Property.Inout
 where
     Base: Collection.`Protocol` & ~Copyable,
+    Base.Index: Escapable,
     Base.Element: Copyable & Comparison.`Protocol`,
     Tag == Collection.Min
 {
@@ -139,6 +148,7 @@ where
     extension Property.Inout
     where
         Base: Collection.`Protocol` & ~Copyable,
+        Base.Index: Escapable,
         Base.Element: Copyable & Swift.Comparable,
         Tag == Collection.Min
     {

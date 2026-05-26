@@ -40,6 +40,7 @@ extension Collection {
         /// - Parameter i: A valid index of the collection. `i` must be greater
         ///   than `startIndex`.
         /// - Returns: The index immediately before `i`.
+        @_lifetime(copy i)
         func index(before i: Index) -> Index
     }
 }

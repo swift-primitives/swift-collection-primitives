@@ -25,7 +25,11 @@ extension Collection.Slice {
     /// let prefix = collection[..<endIndex]     // PartialRangeUpTo
     /// let suffix = collection[startIndex...]    // PartialRangeFrom
     /// ```
-    public protocol `Protocol`: Collection.`Protocol` & ~Copyable {
+    // Slicing is inherently range-based (`Range<Index>`), and stdlib `Range`
+    // requires `Swift.Comparable` (which also requires Escapable). So a slicing
+    // collection's `Index` must be `Swift.Comparable` — the default `Index<Element>`
+    // is; `~Escapable` / custom-domain indices are excluded from slicing by design.
+    public protocol `Protocol`: Collection.`Protocol` & ~Copyable where Index: Swift.Comparable {
         /// Accesses a contiguous sub-range of the collection.
         ///
         /// Returns `Self` — this is a self-slicing collection.

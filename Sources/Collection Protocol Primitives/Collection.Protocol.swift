@@ -1,3 +1,4 @@
+public import Comparison_Primitives
 public import Index_Primitives
 
 extension Collection {
@@ -45,7 +46,10 @@ extension Collection {
     public protocol `Protocol`: ~Copyable {
         associatedtype Element: ~Copyable
 
-        typealias Index = Index_Primitives.Index<Element>
+        // `Index` is a `~Escapable`-admitting associatedtype (default `Index<Element>`)
+        // so conformers with custom index domains (e.g. storage-slot positions) can
+        // supply their own. Verified viable via Experiments/collection-index-escapable-lifetime.
+        associatedtype Index: Comparison.`Protocol` & ~Escapable = Index_Primitives.Index<Element>
         /// The position of the first element in a non-empty collection.
         var startIndex: Index { get }
 
@@ -62,6 +66,11 @@ extension Collection {
         ///
         /// - Parameter i: A valid index of the collection.
         /// - Returns: The index immediately after `i`.
+        ///
+        /// The successor's lifetime derives from the input index `i` (not from a
+        /// borrow of `self`), so a `~Escapable` index survives the storable-index
+        /// contract (`formIndex(after: inout Index)`). See the experiment above.
+        @_lifetime(copy i)
         func index(after i: Index) -> Index
     }
 }
