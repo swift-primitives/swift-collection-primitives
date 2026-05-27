@@ -81,6 +81,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-primitives/swift-comparison-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-index-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-iterator-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-order-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-property-primitives.git", branch: "main"),
     ],
@@ -143,6 +144,7 @@ let package = Package(
             dependencies: [
                 "Collection Clearable Primitives",
                 "Collection Protocol Primitives",
+                .product(name: "Iterable", package: "swift-iterator-primitives"),
                 .product(name: "Property Primitives", package: "swift-property-primitives"),
             ]
         ),
@@ -238,6 +240,7 @@ let package = Package(
             dependencies: [
                 "Collection Primitives",
                 "Collection Primitives Test Support",
+                .product(name: "Iterable", package: "swift-iterator-primitives"),
             ]
         ),
     ],
