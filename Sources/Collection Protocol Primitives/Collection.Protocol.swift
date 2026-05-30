@@ -37,12 +37,17 @@ extension Collection {
     /// container.forEach { print($0) }  // 1, 2, 3 (again)
     /// ```
     ///
-    /// ## Relationship to Sequence.Protocol
+    /// ## Relationship to Iterable / Sequenceable
     ///
-    /// `Collection.Protocol` does not inherit from `Sequence.Protocol`.
-    /// Collections iterate via index traversal (`startIndex`, `index(after:)`),
-    /// not via `makeIterator()` / `next()`. Types wanting `Swift.Collection`
-    /// or `for-in` syntax should also conform to `Sequence.Protocol` separately.
+    /// `Collection.Protocol` does not currently refine `Iterable` (multipass /
+    /// borrow) or `Sequenceable` (single-pass / consume). Collections iterate via
+    /// index traversal (`startIndex`, `index(after:)`), not via `makeIterator()` /
+    /// `next()`. Types wanting iterator-based traversal or `for-in` syntax conform
+    /// to `Iterable` / `Sequenceable` separately. (The prior `Sequence.Protocol`
+    /// was renamed to the top-level `Sequenceable` by the sequencer-refactor and no
+    /// longer exists. A future fan-out phase may refine `Iterable` — a collection
+    /// IS-A indexed iteration — gated on a workspace-wide conformer enumeration;
+    /// not yet landed.)
     public protocol `Protocol`: ~Copyable {
         associatedtype Element: ~Copyable
 
