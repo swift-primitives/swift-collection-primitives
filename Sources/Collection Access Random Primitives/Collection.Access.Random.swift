@@ -1,8 +1,3 @@
-extension Collection {
-    /// Namespace for access pattern types.
-    public enum Access {}
-}
-
 extension Collection.Access {
     /// Protocol for collections with O(1) index distance and offset operations.
     ///
