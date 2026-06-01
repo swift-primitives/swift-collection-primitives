@@ -1,5 +1,6 @@
 public import Collection_Primitives
 public import Index_Primitives
+public import Iterable
 
 // MARK: - Fixture Namespace
 
@@ -46,6 +47,32 @@ extension Collection.Fixture.Source {
     @inlinable
     public func index(after i: Index_Primitives.Index<Element>) -> Index_Primitives.Index<Element> {
         i.successor.saturating()
+    }
+}
+
+// MARK: - Source: Iterable
+
+extension Collection.Fixture.Source {
+    /// Scalar generator over the array backing — the canonical `Iterable` witness for
+    /// this index-backed fixture (no contiguous span of its own to project).
+    public struct Iterator: Iterating {
+        @usableFromInline
+        let _elements: [Element]
+        @usableFromInline
+        var _position: Int = 0
+        @inlinable
+        init(_ elements: [Element]) { self._elements = elements }
+        @inlinable
+        public mutating func next() -> Element? {
+            guard _position < _elements.count else { return nil }
+            defer { _position += 1 }
+            return _elements[_position]
+        }
+    }
+
+    @inlinable
+    public func makeIterator() -> Iterator {
+        Iterator(_elements)
     }
 }
 
@@ -98,5 +125,31 @@ extension Collection.Fixture.Clearable.Source {
     @inlinable
     public static func removeAll(_ base: inout Self) {
         base._elements.removeAll()
+    }
+}
+
+// MARK: - Clearable.Source: Iterable
+
+extension Collection.Fixture.Clearable.Source {
+    /// Scalar generator over the array backing — the canonical `Iterable` witness for
+    /// this index-backed fixture (no contiguous span of its own to project).
+    public struct Iterator: Iterating {
+        @usableFromInline
+        let _elements: [Element]
+        @usableFromInline
+        var _position: Int = 0
+        @inlinable
+        init(_ elements: [Element]) { self._elements = elements }
+        @inlinable
+        public mutating func next() -> Element? {
+            guard _position < _elements.count else { return nil }
+            defer { _position += 1 }
+            return _elements[_position]
+        }
+    }
+
+    @inlinable
+    public func makeIterator() -> Iterator {
+        Iterator(_elements)
     }
 }

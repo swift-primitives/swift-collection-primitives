@@ -1,5 +1,6 @@
 public import Comparison_Primitives
 public import Index_Primitives
+public import Iterable
 
 extension Collection {
     /// Protocol for indexed, multi-pass collections, supporting `~Copyable`.
@@ -39,16 +40,22 @@ extension Collection {
     ///
     /// ## Relationship to Iterable / Sequenceable
     ///
-    /// `Collection.Protocol` does not currently refine `Iterable` (multipass /
-    /// borrow) or `Sequenceable` (single-pass / consume). Collections iterate via
-    /// index traversal (`startIndex`, `index(after:)`), not via `makeIterator()` /
-    /// `next()`. Types wanting iterator-based traversal or `for-in` syntax conform
-    /// to `Iterable` / `Sequenceable` separately. (The prior `Sequence.Protocol`
-    /// was renamed to the top-level `Sequenceable` by the sequencer-refactor and no
-    /// longer exists. A future fan-out phase may refine `Iterable` — a collection
-    /// IS-A indexed iteration — gated on a workspace-wide conformer enumeration;
-    /// not yet landed.)
-    public protocol `Protocol`: ~Copyable {
+    /// `Collection.Protocol` refines `Iterable` (the multipass / borrow attachable):
+    /// a collection IS-A multipass iterable, so every conformer vends a canonical
+    /// `makeIterator()` and inherits the `Iterable` terminals (`forEach`, `reduce`,
+    /// `contains`, `first`, …). The refinement carries **no** `makeIterator()`
+    /// default: there is deliberately no index-walk `makeIterator()` on
+    /// `Collection.Protocol`. Each conformer supplies its own `Iterable` witness —
+    /// a span-based bulk iterator (`__IteratorChunkProtocol`) over its storage — so
+    /// iteration borrows elements through the span addressor and carries both
+    /// `Copyable` and `~Copyable` element kinds. An index-walk default would force a
+    /// scalar move-out and reintroduce a `Copyable` gate, so it is intentionally
+    /// absent.
+    ///
+    /// It does **not** refine `Sequenceable` (single-pass / consume): collections are
+    /// multipass by construction. (The prior `Sequence.Protocol` was renamed to the
+    /// top-level `Sequenceable` by the sequencer-refactor and no longer exists.)
+    public protocol `Protocol`: Iterable, ~Copyable {
         associatedtype Element: ~Copyable
 
         // `Index` is a `~Escapable`-admitting associatedtype (default `Index<Element>`)

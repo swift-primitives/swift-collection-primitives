@@ -16,17 +16,18 @@ extension Collection {
     /// }
     /// ```
     ///
-    /// ## Consuming Iteration
+    /// ## Clearing
     ///
-    /// Types conforming to `Collection.Clearable` get `.forEach.consuming { }`
-    /// automatically via the `Property.Inout` extension:
+    /// Types conforming to `Collection.Clearable` get `.remove.all()` automatically
+    /// via the `Collection.Remove` fluent surface. Combine it with the inherited
+    /// `Iterable.forEach` for an iterate-then-clear sequence:
     ///
     /// ```swift
     /// var container = MyContainer([1, 2, 3])
-    /// container.forEach.consuming { element in
+    /// container.forEach { element in    // inherited from Iterable (borrowing)
     ///     print(element)
     /// }
-    /// // container is now empty
+    /// container.remove.all()            // container is now empty
     /// ```
     public protocol Clearable: Collection.`Protocol` & ~Copyable {
         /// Removes all elements.

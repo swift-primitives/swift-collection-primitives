@@ -26,10 +26,6 @@ let package = Package(
             targets: ["Collection Clearable Primitives"]
         ),
         .library(
-            name: "Collection ForEach Primitives",
-            targets: ["Collection ForEach Primitives"]
-        ),
-        .library(
             name: "Collection Indexed Primitives",
             targets: ["Collection Indexed Primitives"]
         ),
@@ -98,6 +94,7 @@ let package = Package(
                 "Collection Namespace Primitives",
                 .product(name: "Comparison Primitives", package: "swift-comparison-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
+                .product(name: "Iterable", package: "swift-iterator-primitives"),
             ]
         ),
 
@@ -135,17 +132,6 @@ let package = Package(
             dependencies: [
                 "Collection Namespace Primitives",
                 "Collection Protocol Primitives",
-            ]
-        ),
-
-        // MARK: - ForEach
-        .target(
-            name: "Collection ForEach Primitives",
-            dependencies: [
-                "Collection Clearable Primitives",
-                "Collection Protocol Primitives",
-                .product(name: "Iterable", package: "swift-iterator-primitives"),
-                .product(name: "Property Primitives", package: "swift-property-primitives"),
             ]
         ),
 
@@ -213,7 +199,6 @@ let package = Package(
                 "Collection Access Random Primitives",
                 "Collection Bidirectional Primitives",
                 "Collection Clearable Primitives",
-                "Collection ForEach Primitives",
                 "Collection Indexed Primitives",
                 "Collection Max Primitives",
                 "Collection Min Primitives",
@@ -232,6 +217,7 @@ let package = Package(
             dependencies: [
                 "Collection Primitives",
                 .product(name: "Index Primitives Test Support", package: "swift-index-primitives"),
+                .product(name: "Iterable", package: "swift-iterator-primitives"),
             ],
             path: "Tests/Support"
         ),

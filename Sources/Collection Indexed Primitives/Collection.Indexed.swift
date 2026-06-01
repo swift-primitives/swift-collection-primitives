@@ -3,13 +3,16 @@ public import Comparison_Primitives
 extension Collection {
     /// Protocol for index-based navigation, supporting `~Copyable` types.
     ///
-    /// > Legacy note: With `Collection.Protocol` now standalone (no `Sequence.Protocol`
-    /// > inheritance), `Collection.Protocol` itself provides index-based access
-    /// > without `makeIterator()`. However, `Collection.Indexed` cannot be folded
-    /// > into `Collection.Protocol` because Protocol's `subscript -> Element { get }`
-    /// > triggers implicit `Element: Copyable` through protocol inheritance chains.
-    /// > `Collection.Indexed` remains as the ~Copyable-safe root for the
-    /// > `Bidirectional` → `Access.Random` hierarchy.
+    /// > Design note: `Collection.Protocol` refines `Iterable` and declares
+    /// > `subscript -> Element { get }`, both of which force its conformers' elements
+    /// > to be `Copyable` (the `{ get }` accessor returns an owned value; `Iterable`
+    /// > vends owned-or-borrowed elements through an iterator). `Collection.Indexed`
+    /// > deliberately declares **neither** `Element` nor `subscript`, so it stays the
+    /// > `~Copyable`-safe index-navigation root for the `Bidirectional` →
+    /// > `Access.Random` hierarchy and for `~Copyable`-element containers (e.g.
+    /// > `Array where Element: ~Copyable`). It therefore cannot be folded into
+    /// > `Collection.Protocol`: that would re-impose the `Copyable` element bound this
+    /// > protocol exists to avoid.
     ///
     /// `Collection.Indexed` provides index navigation without requiring
     /// `makeIterator()`. This enables index-based iteration over containers

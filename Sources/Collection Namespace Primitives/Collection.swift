@@ -28,8 +28,10 @@
 /// ```
 ///
 /// `Collection.Protocol` and `Collection.Indexed` are parallel hierarchies.
-/// Types typically conform to both. `Sequence.Protocol` is a separate protocol
-/// for iterator-based access — types wanting `for-in` conform to it separately.
+/// Types typically conform to both. `Collection.Protocol` refines `Iterable`, so
+/// every conformer also inherits the multipass iteration terminals (`forEach`,
+/// `reduce`, `contains`, `first`); the single-pass `Sequenceable` attachable is
+/// separate.
 ///
 /// ## Collection-Specific Tags
 ///
@@ -37,7 +39,6 @@
 ///
 /// | Tag | Operations |
 /// |-----|------------|
-/// | `Collection.ForEach` | `.forEach { }`, `.forEach.borrowing { }`, `.forEach.consuming { }` (index-based) |
 /// | `count` (direct) | `.count`, `.count(where:)` (return `Index<Element>.Count`; borrowing) |
 /// | `Collection.Min` | `.min()`, `.min(by:)`, `.min.index(by:)` |
 /// | `Collection.Max` | `.max()`, `.max(by:)`, `.max.index(by:)` |
@@ -52,8 +53,10 @@
 ///
 /// ## Usage
 ///
-/// Conform your type to `Collection.Protocol`. All collection-specific `.forEach`,
-/// `.count`, `.min`, and `.max` are available automatically:
+/// Conform your type to `Collection.Protocol`, supplying the four index members and
+/// an `Iterable` witness (`makeIterator()`). The collection-specific `.count`,
+/// `.min`, and `.max` are available automatically, and `forEach` is inherited from
+/// `Iterable`:
 ///
 /// ```swift
 /// extension MyContainer: Collection.Protocol {
@@ -61,11 +64,13 @@
 ///     var endIndex: Index { Index(_unchecked: position: storage.count) }
 ///     subscript(position: Index) -> Element { storage[Int(bitPattern: position)] }
 ///     func index(after i: Index) -> Index { (i + Index.Offset(1))! }
+///
+///     borrowing func makeIterator() -> Iterator { /* span-based bulk iterator */ }
 /// }
 ///
 /// // All of these work immediately:
-/// container.forEach { }       // index-based (Collection.ForEach)
-/// container.count             // total count (Index<Element>.Count)
-/// container.min(by: .ascending) // index-based (Collection.Min)
+/// container.forEach { }          // inherited from Iterable
+/// container.count                // total count (Index<Element>.Count)
+/// container.min(by: .ascending)  // index-based (Collection.Min)
 /// ```
 public struct Collection: Sendable {}
