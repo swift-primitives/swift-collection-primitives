@@ -1,7 +1,6 @@
 /// Default implementations for `Collection.Protocol` conformers.
 ///
-/// Provides `isEmpty` and `formIndex(after:)` as extension defaults,
-/// mirroring the defaults on `Collection.Indexed`.
+/// Provides `isEmpty` and `formIndex(after:)` as extension defaults.
 extension Collection.`Protocol` where Self: ~Copyable {
     /// A Boolean value indicating whether the collection is empty.
     @inlinable

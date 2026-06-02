@@ -26,10 +26,6 @@ let package = Package(
             targets: ["Collection Clearable Primitives"]
         ),
         .library(
-            name: "Collection Indexed Primitives",
-            targets: ["Collection Indexed Primitives"]
-        ),
-        .library(
             name: "Collection Max Primitives",
             targets: ["Collection Max Primitives"]
         ),
@@ -95,15 +91,6 @@ let package = Package(
                 .product(name: "Comparison Primitives", package: "swift-comparison-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
                 .product(name: "Iterable", package: "swift-iterator-primitives"),
-            ]
-        ),
-
-        // MARK: - Indexed
-        .target(
-            name: "Collection Indexed Primitives",
-            dependencies: [
-                "Collection Namespace Primitives",
-                .product(name: "Comparison Primitives", package: "swift-comparison-primitives"),
             ]
         ),
 
@@ -199,7 +186,6 @@ let package = Package(
                 "Collection Access Random Primitives",
                 "Collection Bidirectional Primitives",
                 "Collection Clearable Primitives",
-                "Collection Indexed Primitives",
                 "Collection Max Primitives",
                 "Collection Min Primitives",
                 "Collection Namespace Primitives",

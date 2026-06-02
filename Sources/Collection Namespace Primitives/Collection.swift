@@ -18,20 +18,17 @@
 /// ### Protocol Hierarchy
 ///
 /// ```
-/// Collection.Indexed                    ← startIndex, endIndex, index(after:)
+/// Collection.Protocol                   ← Element, Index, startIndex, endIndex, subscript, index(after:)
 ///       ↑
 /// Collection.Bidirectional              ← index(before:)
 ///       ↑
 /// Collection.Access.Random              ← O(1) guarantee
-///
-/// Collection.Protocol                   ← Element, subscript (standalone)
 /// ```
 ///
-/// `Collection.Protocol` and `Collection.Indexed` are parallel hierarchies.
-/// Types typically conform to both. `Collection.Protocol` refines `Iterable`, so
-/// every conformer also inherits the multipass iteration terminals (`forEach`,
-/// `reduce`, `contains`, `first`); the single-pass `Sequenceable` attachable is
-/// separate.
+/// `Collection.Bidirectional` refines `Collection.Protocol`, which refines
+/// `Iterable`, so every conformer also inherits the multipass iteration terminals
+/// (`forEach`, `reduce`, `contains`, `first`); the single-pass `Sequenceable`
+/// attachable is separate.
 ///
 /// ## Collection-Specific Tags
 ///

@@ -26,13 +26,11 @@ extension Collection.Access {
     /// ## Protocol Hierarchy
     ///
     /// ```
-    /// Collection.Indexed              ← startIndex, endIndex, index(after:)
+    /// Collection.Protocol             ← Element, Index, startIndex, endIndex, subscript, index(after:)
     ///       ↑
     /// Collection.Bidirectional        ← index(before:)
     ///       ↑
     /// Collection.Access.Random        ← O(1) guarantee
-    ///
-    /// Collection.Protocol             ← Element, subscript (separate hierarchy)
     /// ```
     public protocol Random: Collection.Bidirectional & ~Copyable {}
 }
