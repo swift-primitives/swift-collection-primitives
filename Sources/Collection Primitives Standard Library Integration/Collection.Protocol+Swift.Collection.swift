@@ -1,26 +1,30 @@
 /// Bridge to `Swift.Collection` for `Copyable` conformers.
 ///
-/// Types conforming to both `Collection.Protocol` and `Sequence.Protocol`
-/// that are `Copyable` can also conform to `Swift.Collection`:
+/// A `Copyable` type conforming to `Collection.Protocol` can also conform to
+/// `Swift.Collection` once it supplies a `Swift.Sequence`-compatible
+/// `makeIterator()`:
 ///
 /// ```swift
-/// struct MyContainer: Collection.`Protocol`, Sequence.`Protocol`, Swift.Collection {
-///     // Collection.Protocol + Sequence.Protocol requirements satisfy Swift.Collection
+/// struct MyContainer: Collection.`Protocol`, Swift.Collection {
+///     // Collection.Protocol's index requirements + a Swift.Sequence
+///     // makeIterator() satisfy Swift.Collection.
 /// }
 /// ```
 ///
-/// ## Why Both Protocols Are Needed
+/// ## What `Swift.Collection` needs
 ///
-/// `Swift.Collection` requires both index-based access (from `Collection.Protocol`)
-/// and `makeIterator()` (from `Sequence.Protocol`). Since `Collection.Protocol`
-/// no longer inherits from `Sequence.Protocol`, types must conform to both
-/// explicitly to bridge to `Swift.Collection`.
+/// `Swift.Collection` requires index-based access (provided by `Collection.Protocol`)
+/// and a `Swift.Sequence`-compatible `makeIterator()`. `Collection.Protocol` refines
+/// `Iterable`, but the `Iterable` witness is a borrowing *chunk* iterator
+/// (`__IteratorChunkProtocol`), not the scalar `Swift.IteratorProtocol` that
+/// `Swift.Sequence` consumes — so a `Copyable` conformer supplies a `Swift.Sequence`
+/// `makeIterator()` (often forwarding to stdlib storage) to bridge.
 ///
 /// ## Usage
 ///
 /// ```swift
-/// // 1. Define your type with both protocols
-/// struct Numbers: Collection.`Protocol`, Sequence.`Protocol` {
+/// // 1. Define a Collection.Protocol conformer that vends a Swift.Sequence iterator.
+/// struct Numbers: Collection.`Protocol` {
 ///     let values: [Int]
 ///
 ///     var startIndex: Index { .zero }
@@ -30,13 +34,13 @@
 ///     func makeIterator() -> Array<Int>.Iterator { values.makeIterator() }
 /// }
 ///
-/// // 2. Add Swift.Collection conformance (no implementation needed)
+/// // 2. Add Swift.Collection conformance (no implementation needed).
 /// extension Numbers: Swift.Collection {}
 ///
-/// // 3. Now works with for-in, subscript ranges, and stdlib algorithms
+/// // 3. Now works with for-in, subscript ranges, and stdlib algorithms.
 /// for n in Numbers(values: [1, 2, 3]) { print(n) }
 /// ```
 extension Collection.`Protocol` where Self: Copyable {
-    // All index-based requirements satisfied by Collection.Protocol.
-    // Types also need Sequence.Protocol for makeIterator() to bridge to Swift.Collection.
+    // Index-based requirements are satisfied by Collection.Protocol; bridging to
+    // Swift.Collection additionally needs a Swift.Sequence-compatible makeIterator().
 }

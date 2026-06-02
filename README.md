@@ -2,11 +2,11 @@
 
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
-Indexed-collection protocol family for Swift — `Collection.Protocol` with `~Copyable` element support, a parallel `Collection.Indexed` → `Bidirectional` → `Access.Random` traversal hierarchy, and automatic fluent terminal operations (`.forEach`, `.count`, `.min`, `.max`, `.remove`, `.slice`) provided by protocol extension.
+Indexed-collection protocol family for Swift — `Collection.Protocol` with `~Copyable` element support, a single `Collection.Protocol` → `Bidirectional` → `Access.Random` traversal hierarchy, and automatic fluent terminal operations (`.forEach`, `.count`, `.min`, `.max`, `.remove`, `.slice`) provided by protocol extension.
 
-Stdlib's `Swift.Collection` requires `Element: Copyable` (per SE-0427) and is single-hierarchy: `subscript(position) -> Element { get }` is a protocol requirement, which closes the protocol off to `~Copyable` conformers and `~Copyable` elements. `Collection.Protocol` in this package splits index navigation (`Collection.Indexed`, no `Element` associated type) from element access (`Collection.Protocol`, which adds `Element: ~Copyable` and the subscript) — so move-only containers and containers of move-only elements both reach the same terminal-operation surface.
+Stdlib's `Swift.Collection` requires `Element: Copyable` (per SE-0427): its `subscript(position) -> Element { get }` accessor returns an owned value, which closes the protocol off to `~Copyable` conformers and `~Copyable` elements. `Collection.Protocol` in this package declares `associatedtype Element: ~Copyable` and a `subscript(position) -> Element { get }` that conformers satisfy with a `_read` (borrowing) accessor — the element is yielded in place, never moved out — so move-only containers and containers of move-only elements reach the same index-navigation and terminal-operation surface as `Copyable` ones.
 
-This package is part of **Story 2 of the data-structures cohort** (`data-structures-launch-2026`): seven packages introducing typed indexing and sequences — order, index, sequence, **collection**, input, cyclic, vector. Story 1 (cardinal, ordinal, affine) shipped 2026-05-12; Story 2 Wave 1 (order + index) shipped 2026-05-13; Wave 2 (sequence) shipped 2026-05-16; Wave 3 (cyclic) shipped 2026-05-18. Collection depends on comparison (for index ordering), index (for `Index<Element>` and `Index.Offset`), order (for `Order.Comparator`), property (for the fluent `.<op>` accessors), and sequence (for the iterator protocol family).
+This package is part of **Story 2 of the data-structures cohort** (`data-structures-launch-2026`): seven packages introducing typed indexing and sequences — order, index, sequence, **collection**, input, cyclic, vector. Story 1 (cardinal, ordinal, affine) shipped 2026-05-12; Story 2 Wave 1 (order + index) shipped 2026-05-13; Wave 2 (sequence) shipped 2026-05-16; Wave 3 (cyclic) shipped 2026-05-18. Collection depends on comparison (for index ordering), index (for `Index<Element>` and `Index.Offset`), order (for `Order.Comparator`), property (for the fluent `.<op>` accessors), and iterator (for the `Iterable` protocol family).
 
 ---
 
@@ -75,23 +75,26 @@ Two library products: the umbrella source target and a Test Support spine.
 
 | Product | When to import | What's in it |
 |---------|---------------|--------------|
-| `Collection Primitives` | Default for application code | The protocol family (`Collection.Protocol`, `Collection.Indexed`, `Collection.Bidirectional`, `Collection.Access.Random`, `Collection.Clearable`, `Collection.Remove.Last`, `Collection.Slice.Protocol`), the automatic fluent surface (`.forEach`, `.count`, `.min`, `.max`, `.remove`, `.slice`), the `Collection.Rotated` view, and stdlib bridges to `Swift.Collection` / `Swift.RandomAccessCollection` for `Copyable` conformers. The package re-exports `Comparison_Primitives`, `Index_Primitives`, `Order_Primitives`, and `Sequence_Primitives` so a single `import Collection_Primitives` brings the full surface into scope. |
+| `Collection Primitives` | Default for application code | The protocol family (`Collection.Protocol`, `Collection.Bidirectional`, `Collection.Access.Random`, `Collection.Clearable`, `Collection.Remove.Last`, `Collection.Slice.Protocol`), the automatic fluent surface (`.forEach`, `.count`, `.min`, `.max`, `.remove`, `.slice`), the `Collection.Rotated` view, and stdlib bridges to `Swift.Collection` / `Swift.RandomAccessCollection` for `Copyable` conformers. The package re-exports its external dependencies (`Comparison_Primitives`, `Index_Primitives`, `Order_Primitives`, `Property_Primitives`, and `Iterable`) so a single `import Collection_Primitives` brings the full surface into scope. |
 | `Collection Primitives Test Support` | Test targets | Fixtures and re-exports for downstream test consumers. Re-exports the umbrella plus `Index Primitives Test Support`. |
 
 Foundation-free. No concurrency surface. No platform conditionals.
 
-### Two parallel hierarchies
+### A single index hierarchy
 
-`Collection.Protocol` and `Collection.Indexed` are **parallel** — not one inheriting from the other. The split exists because protocol-level element access blocks `~Copyable` propagation through the inheritance chain.
+`Collection.Protocol` is the single root of the index hierarchy. `Collection.Bidirectional` refines it (adding `index(before:)`), and `Collection.Access.Random` refines `Collection.Bidirectional` (adding the O(1)-index-arithmetic guarantee):
 
-| Aspect | `Collection.Protocol` | `Collection.Indexed` |
-|--------|----------------------|---------------------|
-| Has `Element` associated type | Yes (`~Copyable`) | No |
-| Has `subscript(position:) -> Element` | Yes | No (conformers add it as a direct member) |
-| Supports `~Copyable` element types in subprotocols | Blocked by `{ get }` requirement | Yes |
-| Used as | Standalone collection API | Root of the `Bidirectional` → `Access.Random` hierarchy |
+```
+Collection.Protocol      ← Element, Index, startIndex, endIndex, subscript, index(after:)
+      ↑
+Collection.Bidirectional ← index(before:)
+      ↑
+Collection.Access.Random ← O(1) guarantee
+```
 
-A container typically conforms to both: `Collection.Protocol` for the element-access surface and the terminal operations, plus `Collection.Bidirectional` (which refines `Collection.Indexed`) or `Collection.Access.Random` for the O(1)-index-arithmetic guarantee. Types wanting `Swift.Collection` or `for-in` syntax also conform to `Sequence.Protocol` separately — `Collection.Protocol` does not inherit from it, because collections iterate by index traversal rather than `makeIterator()` / `next()`.
+`~Copyable` element support comes from `Collection.Protocol` itself: it declares `associatedtype Element: ~Copyable`, and its `subscript(position:) -> Element { get }` is satisfied by a `_read` (borrowing) accessor that yields the element in place rather than moving it out. So the `Bidirectional` and `Access.Random` refinements work for containers of move-only elements without any separate navigation root. (An earlier design carried a separate bare-index-navigation protocol — no `Element`, no `subscript` — to dodge a presumed `Copyable` gate on `subscript { get }`; it proved redundant, because the `_read` subscript already avoids that gate, and was removed.)
+
+`Collection.Protocol` refines `Iterable` (the multi-pass / borrow attachable), so every conformer vends a span-based `makeIterator()` and inherits the `Iterable` terminals (`.forEach`, `.reduce`, `.contains`, `.first`) for free. It does **not** refine `Sequenceable` (the single-pass / consuming attachable) — that is an orthogonal capability. Bridging to `Swift.Collection` or `for-in` additionally needs a `Swift.Sequence`-compatible `makeIterator()`, since the `Iterable` witness is a borrowing *chunk* iterator rather than a scalar `Swift.IteratorProtocol`.
 
 ### Terminal operations as protocol extensions
 
@@ -103,7 +106,7 @@ The fluent surface — `.forEach`, `.count`, `.min`, `.max`, `.remove`, `.slice`
 
 ## `~Copyable` element support
 
-`Collection.Protocol` declares `associatedtype Element: ~Copyable`. Index navigation flows through `Collection.Indexed` (which omits `Element` entirely), so the `Bidirectional` and `Access.Random` refinements work for containers of move-only types without forfeiting the index hierarchy. Element-returning terminal operations (`.min()`, `.max()` value forms) silently constrain to `Element: Copyable`; index-returning operations (`.min.index(by:)`, `.max.index(by:)`, `.count.where`) work over `~Copyable` elements. The split lets a container of file descriptors reach the same index-finding surface as a container of integers, without compromising either case.
+`Collection.Protocol` declares `associatedtype Element: ~Copyable`, and its `subscript(position:) -> Element { get }` is satisfied by a `_read` (borrowing) accessor, so index navigation and element access work for containers of move-only types without forfeiting the index hierarchy — the `Bidirectional` and `Access.Random` refinements inherit that support directly. Element-returning terminal operations (`.min()`, `.max()` value forms) silently constrain to `Element: Copyable`; index-returning operations (`.min.index(by:)`, `.max.index(by:)`, `.count.where`) work over `~Copyable` elements. This lets a container of file descriptors reach the same index-finding surface as a container of integers, without compromising either case.
 
 For self-slicing containers, `Collection.Slice.Protocol` adds `subscript(bounds: Range<Index>) -> Self`. The package provides partial-range subscripts (`self[i...]`, `self[..<i]`) as defaults via a two-tier pattern: a `~Copyable`-safe borrowing tier via `_read`, and a `Copyable` tier that returns owned values via `get`.
 
@@ -141,11 +144,11 @@ Pre-1.0. The public API of `Collection.Protocol` and its members may change whil
 
 | Surface | 0.1.x expectation |
 |---|---|
-| Public type names (`Collection.Protocol`, `Collection.Indexed`, `Collection.Bidirectional`, `Collection.Access.Random`, `Collection.Slice.Protocol`, `Collection.Rotated`) | Stable within 0.1.x |
+| Public type names (`Collection.Protocol`, `Collection.Bidirectional`, `Collection.Access.Random`, `Collection.Slice.Protocol`, `Collection.Rotated`) | Stable within 0.1.x |
 | Documented initializers, accessors, and the fluent `.<op>` surface | Stable within 0.1.x |
 | Internal storage shapes and the hoisted `__CollectionRotated` backing | Not part of the source-stability commitment |
 
-The dual-hierarchy split (`Collection.Protocol` parallel to `Collection.Indexed`) is the 0.1.0 shape and reflects the `~Copyable`-propagation constraint described in [Two parallel hierarchies](#two-parallel-hierarchies). It is not subsumable into a single hierarchy under current Swift.
+The single index hierarchy (`Collection.Protocol` → `Collection.Bidirectional` → `Collection.Access.Random`, described in [A single index hierarchy](#a-single-index-hierarchy)) is the 0.1.0 shape. An earlier design split bare index navigation into a separate parallel protocol; that split proved redundant — `Collection.Protocol`'s `_read` subscript already carries `~Copyable` support — and was removed.
 
 ---
 
@@ -153,12 +156,10 @@ The dual-hierarchy split (`Collection.Protocol` parallel to `Collection.Indexed`
 
 Direct dependencies (all already-public):
 
-- [swift-comparison-primitives](https://github.com/swift-primitives/swift-comparison-primitives) — `Comparison.Protocol`, the `Comparable`-shape conformance the `Collection.Indexed` `Index` associated type requires.
+- [swift-comparison-primitives](https://github.com/swift-primitives/swift-comparison-primitives) — `Comparison.Protocol`, the `Comparable`-shape conformance the `Collection.Protocol` `Index` associated type requires.
 - [swift-index-primitives](https://github.com/swift-primitives/swift-index-primitives) — `Index<Element>`, `Index.Offset`, and `Index.Count`, the typed-indexing surface the protocol family is built on.
 - [swift-order-primitives](https://github.com/swift-primitives/swift-order-primitives) — `Order.Comparator`, the comparator type `.min(by:)`, `.max(by:)`, and the index-returning variants consume.
 - [swift-property-primitives](https://github.com/swift-primitives/swift-property-primitives) — `Property<Tag, Base>.Inout`, the phantom-tagged fluent-accessor machinery that powers `.forEach { }`, `.count.where { }`, `.min(by:)`, `.max.index(by:)`, and the rest of the terminal surface.
-- [swift-sequence-primitives](https://github.com/swift-primitives/swift-sequence-primitives) — `Sequence.Protocol`, the iterator-based protocol family containers conform to in parallel with `Collection.Protocol` to enable `for-in` and `Swift.Collection` bridging.
-
 Cohort siblings (Story 2 — Typed indexing and sequences):
 
 - order, index, sequence, **collection**, input, cyclic, vector — see [`data-structures-launch-2026`](https://github.com/swift-institute) for the cohort narrative.

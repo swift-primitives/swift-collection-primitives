@@ -1,27 +1,30 @@
 /// Bridge to `Swift.BidirectionalCollection` for `Copyable` conformers.
 ///
-/// Types conforming to `Collection.Bidirectional`, `Collection.Protocol`,
-/// and `Sequence.Protocol` that are `Copyable` can conform to
-/// `Swift.BidirectionalCollection`:
+/// A `Copyable` type conforming to `Collection.Bidirectional` (and therefore
+/// `Collection.Protocol`) can conform to `Swift.BidirectionalCollection` once it
+/// supplies a `Swift.Sequence`-compatible `makeIterator()`:
 ///
 /// ```swift
-/// struct MyContainer: Collection.Bidirectional, Collection.`Protocol`,
-///                     Sequence.`Protocol`, Swift.BidirectionalCollection {
-///     // Requirements from all protocols satisfy Swift.BidirectionalCollection
+/// struct MyContainer: Collection.Bidirectional, Swift.BidirectionalCollection {
+///     // index navigation + a Swift.Sequence makeIterator() satisfy
+///     // Swift.BidirectionalCollection.
 /// }
 /// ```
 ///
-/// ## Why All Three Protocols Are Needed
+/// ## What `Swift.BidirectionalCollection` needs
 ///
 /// `Swift.BidirectionalCollection` requires:
 /// - Index navigation with `index(before:)` (from `Collection.Bidirectional`)
-/// - Element access via `subscript` (from `Collection.Protocol`)
-/// - `makeIterator()` (from `Sequence.Protocol`)
+/// - Element access via `subscript` (from `Collection.Protocol`, which
+///   `Collection.Bidirectional` refines)
+/// - a `Swift.Sequence`-compatible `makeIterator()`
 ///
-/// These are independent hierarchies in swift-primitives, so types must
-/// conform to all three explicitly to bridge to `Swift.BidirectionalCollection`.
+/// `Collection.Protocol` refines `Iterable`, but the `Iterable` witness is a
+/// borrowing *chunk* iterator, not the scalar `Swift.IteratorProtocol` that
+/// `Swift.Sequence` consumes — so a `Copyable` conformer supplies a `Swift.Sequence`
+/// `makeIterator()` to bridge.
 extension Collection.Bidirectional where Self: Copyable {
-    // All index-navigation requirements satisfied by Collection.Bidirectional.
-    // Types also need Collection.Protocol (subscript) and Sequence.Protocol (makeIterator)
-    // to bridge to Swift.BidirectionalCollection.
+    // Index-navigation requirements are satisfied by Collection.Bidirectional
+    // (refining Collection.Protocol); bridging to Swift.BidirectionalCollection
+    // additionally needs a Swift.Sequence-compatible makeIterator().
 }
