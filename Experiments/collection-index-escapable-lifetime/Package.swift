@@ -14,7 +14,7 @@ let package = Package(
     name: "collection-index-escapable-lifetime",
     platforms: [.macOS(.v26)],
     dependencies: [
-        .package(path: "../../../swift-comparison-primitives"),
+        .package(url: "https://github.com/swift-primitives/swift-comparison-primitives.git", branch: "main"),
     ],
     targets: [
         .target(
