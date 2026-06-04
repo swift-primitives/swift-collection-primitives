@@ -1,6 +1,7 @@
 public import Collection_Primitives
 public import Index_Primitives
 public import Iterable
+public import Iterator_Chunk_Primitives
 
 // MARK: - Fixture Namespace
 
@@ -53,26 +54,14 @@ extension Collection.Fixture.Source {
 // MARK: - Source: Iterable
 
 extension Collection.Fixture.Source {
-    /// Scalar generator over the array backing — the canonical `Iterable` witness for
-    /// this index-backed fixture (no contiguous span of its own to project).
-    public struct Iterator: Iterating {
-        @usableFromInline
-        let _elements: [Element]
-        @usableFromInline
-        var _position: Int = 0
-        @inlinable
-        init(_ elements: [Element]) { self._elements = elements }
-        @inlinable
-        public mutating func next() -> Element? {
-            guard _position < _elements.count else { return nil }
-            defer { _position += 1 }
-            return _elements[_position]
-        }
-    }
-
+    /// Span-primitive `Iterable` witness: vends a fresh `Iterator.Chunk` over the array
+    /// backing's span each call, so iteration is non-destructive (multipass). The backing
+    /// is dense, contiguously-stored storage, which the chunk tier serves directly — no
+    /// `Iterator.Materializing` adapter (that adapter is for span-less generators).
     @inlinable
-    public func makeIterator() -> Iterator {
-        Iterator(_elements)
+    @_lifetime(borrow self)
+    public borrowing func makeIterator() -> Iterator_Chunk_Primitives.Iterator.Chunk<Element> {
+        Iterator_Chunk_Primitives.Iterator.Chunk(_elements.span)
     }
 }
 
@@ -131,25 +120,13 @@ extension Collection.Fixture.Clearable.Source {
 // MARK: - Clearable.Source: Iterable
 
 extension Collection.Fixture.Clearable.Source {
-    /// Scalar generator over the array backing — the canonical `Iterable` witness for
-    /// this index-backed fixture (no contiguous span of its own to project).
-    public struct Iterator: Iterating {
-        @usableFromInline
-        let _elements: [Element]
-        @usableFromInline
-        var _position: Int = 0
-        @inlinable
-        init(_ elements: [Element]) { self._elements = elements }
-        @inlinable
-        public mutating func next() -> Element? {
-            guard _position < _elements.count else { return nil }
-            defer { _position += 1 }
-            return _elements[_position]
-        }
-    }
-
+    /// Span-primitive `Iterable` witness: vends a fresh `Iterator.Chunk` over the array
+    /// backing's span each call, so iteration is non-destructive (multipass). The backing
+    /// is dense, contiguously-stored storage, which the chunk tier serves directly — no
+    /// `Iterator.Materializing` adapter (that adapter is for span-less generators).
     @inlinable
-    public func makeIterator() -> Iterator {
-        Iterator(_elements)
+    @_lifetime(borrow self)
+    public borrowing func makeIterator() -> Iterator_Chunk_Primitives.Iterator.Chunk<Element> {
+        Iterator_Chunk_Primitives.Iterator.Chunk(_elements.span)
     }
 }
