@@ -204,6 +204,7 @@ let package = Package(
                 "Collection Primitives",
                 .product(name: "Index Primitives Test Support", package: "swift-index-primitives"),
                 .product(name: "Iterable", package: "swift-iterator-primitives"),
+                .product(name: "Iterator Chunk Primitives", package: "swift-iterator-primitives"),
             ],
             path: "Tests/Support"
         ),
