@@ -14,21 +14,10 @@ extension Collection {
     /// }
     /// ```
     ///
-    /// Conform to `Collection.Clearable` to also get `.remove.all()`:
-    ///
-    /// ```swift
-    /// extension MyContainer: Collection.Clearable {
-    ///     static func removeAll(_ base: inout Self) {
-    ///         base._storage.remove.all()
-    ///     }
-    /// }
-    /// ```
-    ///
     /// ## Available Operations
     ///
     /// | Operation | Requires |
     /// |-----------|----------|
     /// | `.remove.last()` | `Collection.Remove.Last` |
-    /// | `.remove.all()` | `Collection.Clearable` |
     public enum Remove {}
 }

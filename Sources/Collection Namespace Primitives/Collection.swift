@@ -11,7 +11,6 @@
 /// | `Collection.Protocol` | Indexed, multi-pass iteration (standalone) |
 /// | `Collection.Bidirectional` | Backward traversal via `index(before:)` |
 /// | `Collection.Access.Random` | O(1) index arithmetic guarantee |
-/// | `Collection.Clearable` | Collection that can be cleared for consuming iteration |
 /// | `Collection.Slice.Protocol` | Self-slicing via `subscript(Range<Index>) -> Self` |
 /// | `Collection.Remove.Last` | Collection supporting `.remove.last()` |
 ///
