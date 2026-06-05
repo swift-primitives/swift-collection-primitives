@@ -59,14 +59,4 @@ extension Collection.`ForEach Test`.Inherited {
 
         #expect(collected.isEmpty)
     }
-
-    @Test
-    func `inherited forEach is available on a Clearable conformer`() {
-        let source = Collection.Fixture.Clearable.Source([7, 8, 9])
-
-        var collected: [Int] = []
-        source.forEach { collected.append($0) }
-
-        #expect(collected == [7, 8, 9])
-    }
 }

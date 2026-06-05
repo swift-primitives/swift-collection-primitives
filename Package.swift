@@ -22,10 +22,6 @@ let package = Package(
             targets: ["Collection Bidirectional Primitives"]
         ),
         .library(
-            name: "Collection Clearable Primitives",
-            targets: ["Collection Clearable Primitives"]
-        ),
-        .library(
             name: "Collection Max Primitives",
             targets: ["Collection Max Primitives"]
         ),
@@ -113,15 +109,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Clearable
-        .target(
-            name: "Collection Clearable Primitives",
-            dependencies: [
-                "Collection Namespace Primitives",
-                "Collection Protocol Primitives",
-            ]
-        ),
-
         // MARK: - Max
         .target(
             name: "Collection Max Primitives",
@@ -146,7 +133,6 @@ let package = Package(
         .target(
             name: "Collection Remove Primitives",
             dependencies: [
-                "Collection Clearable Primitives",
                 "Collection Protocol Primitives",
             ]
         ),
@@ -185,7 +171,6 @@ let package = Package(
             dependencies: [
                 "Collection Access Random Primitives",
                 "Collection Bidirectional Primitives",
-                "Collection Clearable Primitives",
                 "Collection Max Primitives",
                 "Collection Min Primitives",
                 "Collection Namespace Primitives",
