@@ -33,19 +33,3 @@ extension Collection.Remove.View where Base: ~Copyable {
         unsafe Base.removeLast(&_base.pointee)
     }
 }
-
-// MARK: - .remove.all()
-
-extension Collection.Remove.View where Base: Collection.Clearable & ~Copyable {
-    /// Removes all elements via `.remove.all()`.
-    ///
-    /// ```swift
-    /// var container = MyContainer([1, 2, 3])
-    /// container.remove.all()
-    /// container.count  // 0
-    /// ```
-    @inlinable
-    public mutating func all() {
-        unsafe Base.removeAll(&_base.pointee)
-    }
-}
