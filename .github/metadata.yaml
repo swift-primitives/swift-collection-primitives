@@ -1,6 +1,6 @@
 # .github/metadata.yaml
 # Triaged by AI-assisted bulk pass (2026-04-29).
-description: "Collection types for Swift."
+description: "Indexed-collection protocol hierarchy with borrowing accessors that support move-only elements and containers for Swift."
 topics:
   - primitives
   - collection
