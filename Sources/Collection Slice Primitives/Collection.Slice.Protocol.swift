@@ -1,4 +1,11 @@
 extension Collection.Slice {
+    // Slicing is range-based (`Range<Index>`), and stdlib `Range<Bound>` stores its two
+    // bounds by value, so it requires `Bound: Escapable`. A slicing collection's `Index`
+    // must therefore be `Comparable & Escapable`; the default `Index<Element>` is, and
+    // `~Escapable` / custom-domain indices are excluded from slicing by design (a self-
+    // slice would have to store its bound positions — impossible for a ~Escapable index).
+    // On Swift ≤6.3 `Comparable` implied `Escapable`, so `& Escapable` was implicit;
+    // SE-0499 relaxed `Comparable` to admit `~Escapable`, so it must now be spelled out.
     /// A collection that can produce sub-ranges of itself.
     ///
     /// `Collection.Slice.Protocol` extends `Collection.Protocol` with a single
@@ -25,13 +32,6 @@ extension Collection.Slice {
     /// let prefix = collection[..<endIndex]     // PartialRangeUpTo
     /// let suffix = collection[startIndex...]    // PartialRangeFrom
     /// ```
-    // Slicing is range-based (`Range<Index>`), and stdlib `Range<Bound>` stores its two
-    // bounds by value, so it requires `Bound: Escapable`. A slicing collection's `Index`
-    // must therefore be `Comparable & Escapable`; the default `Index<Element>` is, and
-    // `~Escapable` / custom-domain indices are excluded from slicing by design (a self-
-    // slice would have to store its bound positions — impossible for a ~Escapable index).
-    // On Swift ≤6.3 `Comparable` implied `Escapable`, so `& Escapable` was implicit;
-    // SE-0499 relaxed `Comparable` to admit `~Escapable`, so it must now be spelled out.
     public protocol `Protocol`: Collection.`Protocol` & ~Copyable where Index: Swift.Comparable & Swift.Escapable {
         /// Accesses a contiguous sub-range of the collection.
         ///
